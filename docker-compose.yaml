@@ -1,41 +1,23 @@
+version: "3.9"
+
 services:
-  app:
-    deploy:
-      mode: replicated
-      replicas: 3
-    environment:
-      AUTOSCALE: 'False'
-      BUILD_SHA: unknown
-      CONFIG_PATH: config/prod.yaml
-      DATABASE_URL: postgresql://user:password@localhost:5432/db
-      DEBUG: 'False'
-      HEALTHCHECK_PATH: /health
-      HOSTNAME: VIDEO
-      LOG_DIR: logs
-      LOG_LEVEL: INFO
-      MAIN_PORT: '9090'
-      MAX_REPLICAS: '5'
-      MIN_REPLICAS: '1'
-      REDIS_URL: redis://localhost:6379/0
-      REPLICAS: '3'
-      SCALING_MODE: replica
-      SECRETS_PATH: secrets/
-      TIMEZONE: UTC
-      VERSION: 0.0.1
-    healthcheck:
-      interval: 30s
-      retries: 3
-      test:
-      - CMD
-      - curl
-      - -f
-      - http://localhost:9090/health
-      timeout: 5s
-    image: myapp:latest
-    ports:
-    - 9090:9090
+  redis:
+    image: redis:7
     restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  app:
+    image: node:20-bookworm
+    working_dir: /app
+    environment:
+      - PORT=4000
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "4000:4000"
+    depends_on:
+      - redis
     volumes:
-    - ./logs:/logs
-    - ./data:/data
-version: '3.8'
+      - ./app:/app            # <= <-- this was the missing value
+    command: ["node","index.js"]
