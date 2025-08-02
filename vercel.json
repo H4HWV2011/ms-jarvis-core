@@ -5,5 +5,12 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "/index.js" }
-  ]
+  ],
+  "functions": {
+    "index.js": {
+      "includeFiles": [
+        "mountainshares_kb.txt"
+      ]
+    }
+  }
 }
