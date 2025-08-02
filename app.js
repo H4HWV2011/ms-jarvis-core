@@ -5,12 +5,11 @@ const app = express();
 
 // === BEGIN: Production-ready CORS config for Ms. Jarvis API ===
 const allowedOrigins = [
-  'https://ms.jarvis.mountainshares.us',                                         // Custom production domain
-  'https://ms-jarvis-frontend-oz0li2540-h4hwv2011s-projects.vercel.app',         // Vercel frontend project URL (add new Vercel URLs as needed)
-  'http://localhost:3000',                                                       // Local frontend dev
-  'http://localhost:4000'                                                        // Local backend dev
+  'https://ms.jarvis.mountainshares.us',
+  'https://ms-jarvis-frontend-oz0li2540-h4hwv2011s-projects.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:4000'
 ];
-// You may add more preview or frontend URLs as needed, one per line
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -34,24 +33,18 @@ app.get('/mountainshares/ecosystem-status', (req, res) => {
   res.status(200).json({ status: 'ecosystem-live', time: Date.now() });
 });
 
-// --- Contextual brain logic ---
-const { detectQueryType, generateContextualResponse } = require('./app/query_enhancer');
+// --- Modular Council-of-Agents brain logic ---
+const brain = require('./app/brain'); // Uses mother/orchestrator
 
-app.post('/chat-with-mountainshares-brain', (req, res) => {
+app.post('/chat-with-mountainshares-brain', async (req, res) => {
   const message = req.body.message || '';
   const userId = req.body.userId || '';
-  const queryType = detectQueryType(message);
-  const context = generateContextualResponse(queryType, message, userId);
+  const result = await brain.converse(message, userId);
 
   res.status(200).json({
-    reply: context.response_template,
-    info: {
-      detectedType: queryType,
-      focus: context.focus,
-      agent: context.agent_emphasis,
-      tone: context.tone
-    },
-    time: Date.now()
+    reply: result.reply,
+    agent: result.agent,
+    time: result.time
   });
 });
 
