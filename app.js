@@ -50,4 +50,10 @@ app.post('/chat-with-mountainshares-brain', (req, res) => {
   });
 });
 
+// --- Friendly root endpoint ---
+app.get('/', (req, res) => {
+  res.status(200).send("Ms. Jarvis at your service darlin'!");
+});
+
+
 module.exports = app;
