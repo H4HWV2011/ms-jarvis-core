@@ -25,7 +25,7 @@ async function analyze(message) {
 
   try {
     // Read the knowledge base (contract PDF text, extracted previously)
-    const kb = await fs.readFile(path.join(__dirname, '../mountainshares_kb.txt'), 'utf-8');
+    const kb = await fs.readFile(path.resolve(process.cwd(), 'mountainshares_kb.txt'), 'utf-8');
     // Extract all unique words (length > 3 chars) from message
     const words = msg
       .replace(/arbitrium/gi, 'arbitrum')
