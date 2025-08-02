@@ -8,9 +8,7 @@
   ],
   "functions": {
     "index.js": {
-      "includeFiles": [
-        "mountainshares_kb.txt"
-      ]
+      "includeFiles": "mountainshares_kb.txt"
     }
   }
 }
