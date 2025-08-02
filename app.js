@@ -27,4 +27,13 @@ app.get('/mountainshares/ecosystem-status', (req, res) => {
   res.status(200).json({ status: 'ecosystem-live', time: Date.now() });
 });
 
+// --- Chat-with-mountainshares-brain endpoint ---
+app.post('/chat-with-mountainshares-brain', (req, res) => {
+  const userMessage = req.body.message || "";
+  res.status(200).json({
+    reply: `You said: "${userMessage}"`,
+    time: Date.now()
+  });
+});
+
 module.exports = app;
