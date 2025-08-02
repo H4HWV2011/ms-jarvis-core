@@ -1,11 +1,11 @@
-version: "3.9"
-
 services:
   redis:
     image: redis:7
     restart: unless-stopped
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   app:
     image: node:20-bookworm
@@ -13,11 +13,37 @@ services:
     environment:
       - PORT=4000
       - NODE_ENV=production
-      - REDIS_URL=redis://redis:6379
-    ports:
-      - "4000:4000"
-    depends_on:
-      - redis
+      - REDIS_URL=redis://localhost:6379
+      - OLLAMA_URL=http://localhost:11434
+      - PYTHON_AI_URL=http://localhost:8000
     volumes:
-      - ./app:/app            # <= <-- this was the missing value
-    command: ["node","index.js"]
+      - ./app:/app
+    command: ["node", "index.js"]
+    network_mode: host
+
+  ai-python:
+    image: python:3.11-slim
+    working_dir: /ai
+    environment:
+      - OLLAMA_URL=http://localhost:11434
+    volumes:
+      - ./ai:/ai
+    network_mode: host
+    command: >
+      bash -c "
+        pip install fastapi uvicorn pydantic requests && 
+        python ai_server_simple.py
+      "
+
+  vector-db:
+    image: chromadb/chroma:latest
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+
+volumes:
+  redis_data:
+  chroma_data:

@@ -1,4 +1,0 @@
-main_port: 9090
-database_url: "postgresql://user:password@localhost:5432/db"
-replicas: 3
-scaling_mode: "replica"

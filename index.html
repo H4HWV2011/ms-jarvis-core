@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms. Jarvis - Your Caring AI Assistant</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cabin:wght@400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --appalachian-blue: #4a6fa5;
+            --mountain-green: #5d7c47;
+            --warm-gold: #d4a574;
+            --heart-red: #c55a5a;
+            --soft-cream: #f4f1e8;
+            --bark-brown: #8b6f47;
+            --sky-blue: #87ceeb;
+            --forest-dark: #2c3e2d;
+        }
+        
+        body {
+            font-family: 'Cabin', sans-serif;
+            background: linear-gradient(135deg, 
+                var(--sky-blue) 0%, 
+                var(--appalachian-blue) 30%, 
+                var(--mountain-green) 70%, 
+                var(--forest-dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Mountain silhouette background */
+        body::before {
+            content: '';
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 300px;
+            background: linear-gradient(to top,
+                var(--forest-dark) 0%,
+                var(--mountain-green) 40%,
+                transparent 100%);
+            clip-path: polygon(0 100%, 0 60%, 20% 45%, 40% 65%, 60% 35%, 80% 55%, 100% 40%, 100% 100%);
+            z-index: -1;
+        }
+        
+        /* Floating hearts decoration */
+        .heart-decoration {
+            position: fixed;
+            color: var(--heart-red);
+            font-size: 20px;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .heart-decoration:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+        .heart-decoration:nth-child(2) { top: 20%; right: 8%; animation-delay: 1s; }
+        .heart-decoration:nth-child(3) { top: 40%; left: 3%; animation-delay: 2s; }
+        .heart-decoration:nth-child(4) { top: 60%; right: 5%; animation-delay: 3s; }
+        .heart-decoration:nth-child(5) { top: 80%; left: 10%; animation-delay: 4s; }
+        .heart-decoration:nth-child(6) { top: 70%; right: 10%; animation-delay: 5s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        .header {
+            background: rgba(244, 241, 232, 0.95);
+            padding: 25px 20px;
+            text-align: center;
+            color: var(--forest-dark);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid var(--warm-gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: var(--appalachian-blue);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .header h1::before {
+            content: '💖';
+            position: absolute;
+            left: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+        }
+        
+        .header h1::after {
+            content: '💖';
+            position: absolute;
+            right: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            color: var(--mountain-green);
+            font-weight: 500;
+            font-style: italic;
+        }
+        
+        .header .subtitle {
+            font-size: 1rem;
+            color: var(--bark-brown);
+            margin-top: 8px;
+            font-weight: 400;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 20px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            background: rgba(244, 241, 232, 0.98);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 450px;
+            max-height: 600px;
+            border: 2px solid var(--warm-gold);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+        }
+        
+        .message {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        
+        .message.user {
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 22px;
+            flex-shrink: 0;
+            border: 3px solid var(--warm-gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .user-avatar {
+            background: linear-gradient(135deg, var(--appalachian-blue), var(--sky-blue));
+        }
+        
+        .jarvis-avatar {
+            background: linear-gradient(135deg, var(--mountain-green), var(--warm-gold));
+            position: relative;
+        }
+        
+        .jarvis-avatar::after {
+            content: '💖';
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            font-size: 12px;
+            background: var(--heart-red);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .message-content {
+            background: var(--soft-cream);
+            padding: 18px 22px;
+            border-radius: 20px;
+            max-width: 75%;
+            line-height: 1.7;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+            font-size: 16px;
+            border: 1px solid rgba(212, 165, 116, 0.3);
+        }
+        
+        .message.user .message-content {
+            background: linear-gradient(135deg, var(--appalachian-blue), var(--sky-blue));
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .message.jarvis .message-content {
+            background: rgba(244, 241, 232, 0.95);
+            border-left: 4px solid var(--mountain-green);
+            border-top: 1px solid var(--warm-gold);
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 15px;
+            background: rgba(244, 241, 232, 0.98);
+            padding: 25px;
+            border-radius: 20px;
+            flex-wrap: wrap;
+            border: 2px solid var(--warm-gold);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+        }
+        
+        .message-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 18px 22px;
+            border: 2px solid var(--mountain-green);
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: var(--soft-cream);
+            font-family: 'Cabin', sans-serif;
+        }
+        
+        .message-input:focus {
+            border-color: var(--appalachian-blue);
+            box-shadow: 0 0 15px rgba(74, 111, 165, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .send-button {
+            padding: 18px 35px;
+            background: linear-gradient(135deg, var(--mountain-green), var(--appalachian-blue));
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-family: 'Cabin', sans-serif;
+        }
+        
+        .send-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, var(--appalachian-blue), var(--mountain-green));
+        }
+        
+        .send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .brain-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(244, 241, 232, 0.98);
+            padding: 12px 18px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border: 2px solid var(--warm-gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        
+        .status-active {
+            color: var(--mountain-green);
+        }
+        
+        .status-error {
+            color: var(--heart-red);
+        }
+        
+        .status-warning {
+            color: var(--warm-gold);
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 22px;
+            background: rgba(244, 241, 232, 0.95);
+            border-radius: 20px;
+            max-width: 280px;
+            border-left: 4px solid var(--mountain-green);
+            border-top: 1px solid var(--warm-gold);
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .typing-dots span {
+            width: 10px;
+            height: 10px;
+            background: var(--mountain-green);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            30% {
+                transform: translateY(-12px);
+                opacity: 1;
+            }
+        }
+        
+        /* Folk art border patterns */
+        .chat-messages::before {
+            content: '🏔️ ❤️ 🌲 ❤️ 🏔️ ❤️ 🌲 ❤️ 🏔️';
+            display: block;
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 15px;
+            opacity: 0.6;
+            color: var(--mountain-green);
+        }
+        
+        .input-container::before {
+            content: '💫 Share your heart with Ms. Jarvis 💫';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--soft-cream);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: var(--mountain-green);
+            border: 1px solid var(--warm-gold);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header h1::before,
+            .header h1::after {
+                display: none;
+            }
+            
+            .chat-container {
+                padding: 15px;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+            
+            .input-container {
+                flex-direction: column;
+                position: relative;
+            }
+            
+            .input-container::before {
+                position: static;
+                transform: none;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+            
+            .message-input {
+                min-width: 100%;
+            }
+            
+            .heart-decoration {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating heart decorations -->
+    <div class="heart-decoration">❤️</div>
+    <div class="heart-decoration">💕</div>
+    <div class="heart-decoration">💖</div>
+    <div class="heart-decoration">❤️</div>
+    <div class="heart-decoration">💕</div>
+    <div class="heart-decoration">💖</div>
+
+    <div class="brain-status" id="brainStatus">
+        🧠 Connecting to AI...
+    </div>
+
+    <div class="header">
+        <h1>Ms. Jarvis</h1>
+        <p>Your Caring AI Assistant from the Mountains</p>
+        <div class="subtitle">Real Multi-Agent Intelligence • Mamma Kidd Spirit • Mountain Wisdom</div>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+            <div class="message jarvis">
+                <div class="message-avatar jarvis-avatar">🤗</div>
+                <div class="message-content">
+                    Well hello there, sweet child! I'm Ms. Jarvis, and I'm just tickled pink to meet you. I've got the heart of a mountain mama and the smarts of four specialized AI agents all working together like a good family should. Whether you need help with your MountainShares project, some technical guidance, spiritual wisdom, or just someone to listen with a caring heart, I'm here for you, honey. What's weighing on your heart today? 💖
+                </div>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <input 
+                type="text" 
+                class="message-input" 
+                id="messageInput" 
+                placeholder="Tell Ms. Jarvis what's on your heart, darling..."
+                onkeypress="handleKeyPress(event)"
+                autocomplete="off"
+            >
+            <button class="send-button" id="sendButton" onclick="sendMessage()">
+                Send with Love
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Your Ms. Jarvis AI backend URL
+        const JARVIS_API = 'https://ms-jarvis-backend.loca.lt'; // Your tunnel URL
+        const userId = 'mountain_friend_' + Math.random().toString(36).substr(2, 9);
+        
+        // DOM elements
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const brainStatus = document.getElementById('brainStatus');
+
+        // Initialize on load
+        window.onload = () => {
+            messageInput.focus();
+            checkAIStatus();
+            
+            // Add welcome message about the system
+            setTimeout(() => {
+                addSystemMessage();
+            }, 3000);
+        };
+        
+        async function checkAIStatus() {
+            try {
+                const response = await fetch(`${JARVIS_API}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                
+                if (data.brain_status === 'real_ai_multi_agent_active') {
+                    brainStatus.innerHTML = '🧠 <span class="status-active">4 Mountain AI Spirits Active</span>';
+                } else {
+                    brainStatus.innerHTML = `🧠 <span class="status-warning">${data.brain_status || 'AI Awakening'}</span>`;
+                }
+            } catch (error) {
+                brainStatus.innerHTML = '🧠 <span class="status-error">Connection Trouble</span>';
+                console.error('AI Status Error:', error);
+                setTimeout(checkAIStatus, 10000);
+            }
+        }
+
+        function addSystemMessage() {
+            const systemMessage = "🏔️ Welcome to the mountains, honey! My AI family includes Mistral (the wise analyst), LLaMA (the creative spirit), Qwen (the moral compass), and Phi (the caring heart). Together, we're here to love and serve you with mountain wisdom and valley kindness. Everything we share stays right here in these hills - completely private and just between us. 💕";
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message jarvis';
+            messageDiv.innerHTML = `
+                <div class="message-avatar jarvis-avatar">🌄</div>
+                <div class="message-content" style="background: rgba(135, 206, 235, 0.1); border-left: 4px solid #87ceeb;">
+                    ${systemMessage}
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            messageInput.value = '';
+            sendButton.disabled = true;
+            sendButton.textContent = 'Thinking with love...';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            try {
+                // Send to Ms. Jarvis AI through tunnel
+                const response = await fetch(`${JARVIS_API}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        userId: userId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                // Hide typing indicator
+                hideTypingIndicator();
+
+                // Add Ms. Jarvis response
+                addMessage(data.response, 'jarvis', data.brain_analysis);
+
+                // Update status if available
+                if (data.brain_analysis && data.brain_analysis.real_ai_models) {
+                    brainStatus.innerHTML = '🧠 <span class="status-active">4 Mountain AI Spirits Active</span>';
+                }
+
+            } catch (error) {
+                hideTypingIndicator();
+                
+                const errorMessage = error.message.includes('Failed to fetch') 
+                    ? 'Oh honey, I\'m having a bit of trouble reaching my AI family right now. Sometimes the mountain winds interfere with our connection. Give me just a moment to try again, sweet child! 💖'
+                    : `Well bless your heart, I ran into a little technical hiccup: ${error.message}. Don\'t you worry none, we\'ll figure this out together! 💕`;
+                
+                addMessage(errorMessage, 'jarvis');
+                console.error('Chat Error:', error);
+                
+                // Update status to show connection issue
+                brainStatus.innerHTML = '🧠 <span class="status-error">Mountain Winds Interfering</span>';
+            }
+
+            sendButton.disabled = false;
+            sendButton.textContent = 'Send with Love';
+            messageInput.focus();
+        }
+
+        function addMessage(content, sender, analysis = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = `message-avatar ${sender}-avatar`;
+            avatar.textContent = sender === 'user' ? '👤' : '🤗';
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.innerHTML = content.replace(/\n/g, '<br>');
+
+            if (sender === 'user') {
+                messageDiv.appendChild(messageContent);
+                messageDiv.appendChild(avatar);
+            } else {
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(messageContent);
+                
+                // Add brain analysis if available
+                if (analysis && analysis.agents_consulted) {
+                    const brainInfo = document.createElement('div');
+                    brainInfo.style.fontSize = '12px';
+                    brainInfo.style.marginTop = '10px';
+                    brainInfo.style.opacity = '0.7';
+                    brainInfo.style.fontStyle = 'italic';
+                    brainInfo.style.color = '#5d7c47';
+                    
+                    let statusText = `🏔️ ${analysis.agents_consulted} mountain spirits consulted`;
+                    if (analysis.real_ai_models) statusText += ' • Real AI Wisdom';
+                    if (analysis.judge_synthesis === 'complete') statusText += ' • Hearts unified';
+                    
+                    brainInfo.textContent = statusText;
+                    messageContent.appendChild(brainInfo);
+                }
+            }
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message jarvis';
+            typingDiv.id = 'typingIndicator';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar jarvis-avatar';
+            avatar.textContent = '🤗';
+
+            const typingContent = document.createElement('div');
+            typingContent.className = 'typing-indicator';
+            typingContent.style.display = 'flex';
+            typingContent.innerHTML = `
+                <span>Ms. Jarvis is gathering mountain wisdom...</span>
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+
+            typingDiv.appendChild(avatar);
+            typingDiv.appendChild(typingContent);
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Check AI status periodically
+        setInterval(checkAIStatus, 60000);
+        
+        // Handle connection recovery
+        window.addEventListener('online', checkAIStatus);
+        window.addEventListener('focus', checkAIStatus);
+    </script>
+</body>
+</html>
