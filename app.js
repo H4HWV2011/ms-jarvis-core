@@ -20,9 +20,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ Health endpoint:
+// --- Health check endpoint ---
 app.get('/health', (req, res) => {
-  res.status(200).json({status: 'ok', time: Date.now()});
+  res.status(200).json({ status: 'ok', time: Date.now() });
 });
+
+// (Add additional endpoints below as needed)
 
 module.exports = app;
