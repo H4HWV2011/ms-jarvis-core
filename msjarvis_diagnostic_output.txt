@@ -1,0 +1,110 @@
+==== MSJarvis Diagnostic Script ====
+== Date: Sun Aug  3 09:02:36 EDT 2025 ==
+
+-- PROJECT ROOT CHECK --
+/mnt/c/Users/aubre/Documents/ms-jarvis-core
+total 18M
+drwxrwxrwx 1 h4hwv h4hwv 4.0K Aug  3 09:02 .
+drwxrwxrwx 1 h4hwv h4hwv 4.0K Aug  2 21:50 ..
+-rwxrwxrwx 1 h4hwv h4hwv  304 Aug  2 22:34 .env
+drwxrwxrwx 1 h4hwv h4hwv 4.0K Aug  3 00:12 .git
+-rwxrwxrwx 1 h4hwv h4hwv   52 Aug  2 22:37 .gitignore
+drwxrwxrwx 1 h4hwv h4hwv 4.0K Aug  3 00:30 .vercel
+-rwxrwxrwx 1 h4hwv h4hwv   32 Aug  2 22:34 Procfile
+-rwxrwxrwx 1 h4hwv h4hwv   23 Aug  2 22:34 README.md
+drwxrwxrwx 1 h4hwv h4hwv 4.0K Aug  2 22:34 ai
+drwxrwxrwx 1 h4hwv h4hwv 4.0K Aug  2 23:39 api
+drwxrwxrwx 1 h4hwv h4hwv 4.0K Aug  2 22:37 backendlib
+-rwxrwxrwx 1 h4hwv h4hwv   34 Aug  2 22:34 brain.js
+-rwxrwxrwx 1 h4hwv h4hwv   50 Aug  2 21:50 build.info
+-rwxrwxrwx 1 h4hwv h4hwv  989 Aug  2 21:50 docker-compose.yaml
+-rwxrwxrwx 1 h4hwv h4hwv 1.1K Aug  2 22:34 docker-compose.yaml.backup_20250730_163303
+-rwxrwxrwx 1 h4hwv h4hwv 2.0K Aug  3 08:59 folder_contents.txt
+-rwxrwxrwx 1 h4hwv h4hwv 2.2M Aug  2 21:50 get-pip.py
+-rwxrwxrwx 1 h4hwv h4hwv  24K Aug  2 22:34 index.html
+-rwxrwxrwx 1 h4hwv h4hwv  626 Aug  2 22:34 jarvis-tunnel.log
+-rwxrwxrwx 1 h4hwv h4hwv  167 Aug  2 22:34 local.js
+-rwxrwxrwx 1 h4hwv h4hwv 404K Aug  2 21:50 mountainshares_kb.txt
+-rwxrwxrwx 1 h4hwv h4hwv 6.5M Aug  2 22:34 ms-jarvis-production.tar.gz
+-rwxrwxrwx 1 h4hwv h4hwv 5.1K Aug  2 22:34 ms-jarvis-service-ngrok.sh
+-rwxrwxrwx 1 h4hwv h4hwv 5.7K Aug  2 22:34 ms-jarvis-service.sh
+-rwxrwxrwx 1 h4hwv h4hwv 1.6K Aug  3 09:02 msjarvis_diagnostic.sh
+-rwxrwxrwx 1 h4hwv h4hwv  148 Aug  3 09:02 msjarvis_diagnostic_output.txt
+-rwxrwxrwx 1 h4hwv h4hwv 8.9M Aug  2 22:34 ngrok-v3-stable-linux-amd64.tgz
+drwxrwxrwx 1 h4hwv h4hwv 4.0K Aug  2 21:59 node_modules
+-rwxrwxrwx 1 h4hwv h4hwv  38K Aug  2 22:00 package-lock.json
+-rwxrwxrwx 1 h4hwv h4hwv  320 Aug  2 21:54 package.json
+drwxrwxrwx 1 h4hwv h4hwv 4.0K Aug  2 22:34 public
+-rwxrwxrwx 1 h4hwv h4hwv  342 Aug  2 22:34 requirements.txt.ignore
+drwxrwxrwx 1 h4hwv h4hwv 4.0K Aug  2 22:34 secrets
+-rwxrwxrwx 1 h4hwv h4hwv 3.0K Aug  2 22:34 start-jarvis-tunnel.sh
+drwxrwxrwx 1 h4hwv h4hwv 4.0K Aug  2 21:50 venv
+
+-- GIT STATUS & REMOTE --
+On branch main
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	folder_contents.txt
+	msjarvis_diagnostic.sh
+	msjarvis_diagnostic_output.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+origin	https://github.com/H4HWV2011/ms-jarvis-core.git (fetch)
+origin	https://github.com/H4HWV2011/ms-jarvis-core.git (push)
+
+-- NODE & NPM/YARN INFO --
+v22.18.0
+10.9.3
+
+-- DEPENDENCY AUDIT --
+
+up to date, audited 89 packages in 759ms
+
+21 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+found 0 vulnerabilities
+
+-- ENVIRONMENT FILES --
+-rwxrwxrwx 1 h4hwv h4hwv 304 Aug  2 22:34 .env
+
+-- PROJECT FILES --
+./.git/COMMIT_EDITMSG
+./.git/hooks/applypatch-msg.sample
+./.git/hooks/commit-msg.sample
+./.git/hooks/prepare-commit-msg.sample
+./jarvis-tunnel.log
+./ms-jarvis-production.tar.gz
+./ms-jarvis-service-ngrok.sh
+./ms-jarvis-service.sh
+./msjarvis_diagnostic.sh
+./msjarvis_diagnostic_output.txt
+./node_modules/fetch-blob/streams.cjs
+./node_modules/has-symbols/shams.d.ts
+./node_modules/has-symbols/shams.js
+./node_modules/iconv-lite/lib/streams.js
+./public/node_modules/has-symbols/shams.d.ts
+./public/node_modules/has-symbols/shams.js
+./public/node_modules/iconv-lite/lib/streams.js
+./start-jarvis-tunnel.sh
+./venv/lib/python3.10/site-packages/setuptools/msvc.py
+./venv/lib/python3.10/site-packages/setuptools/_distutils/command/bdist_msi.py
+./venv/lib/python3.10/site-packages/setuptools/_distutils/command/__pycache__/bdist_msi.cpython-310.pyc
+./venv/lib/python3.10/site-packages/setuptools/_distutils/msvc9compiler.py
+./venv/lib/python3.10/site-packages/setuptools/_distutils/msvccompiler.py
+./venv/lib/python3.10/site-packages/setuptools/_distutils/_msvccompiler.py
+./venv/lib/python3.10/site-packages/setuptools/_distutils/__pycache__/msvc9compiler.cpython-310.pyc
+./venv/lib/python3.10/site-packages/setuptools/_distutils/__pycache__/msvccompiler.cpython-310.pyc
+./venv/lib/python3.10/site-packages/setuptools/_distutils/__pycache__/_msvccompiler.cpython-310.pyc
+./venv/lib/python3.10/site-packages/setuptools/__pycache__/msvc.cpython-310.pyc
+
+-- PACKAGE.JSON JARVIS ENTRIES --
+  "name": "ms-jarvis-core",
+No msjarvis entry in package.json
+
+-- VERCEL CONFIG --
+No vercel.json found
+
+-- NEXT.JS/VERCEL BUILD TEST --
+Build failed! Check above for errors.

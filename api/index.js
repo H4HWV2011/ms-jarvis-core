@@ -1,3 +1,4 @@
-module.exports = (req, res) => {
-  res.json({ hello: "vercel-routing-test", url: req.url, method: req.method, time: Date.now() });
-};
+const serverless = require('serverless-http');
+const app = require('../../backendlib/app'); // update path if api/ is at root, or use '../backendlib/app'
+
+module.exports = serverless(app);

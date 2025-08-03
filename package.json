@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "api/index.js",
   "scripts": {
-    "start": "node backendlib/app.js"
+    "start": "node backendlib/app.js",
+    "build": "echo 'No build step needed.'"
   },
   "dependencies": {
     "cors": "^2.8.5",
