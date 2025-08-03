@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const brain = require('./brain');
 
 const allowedOrigins = [
   'https://ms.jarvis.mountainshares.us',
