@@ -1,58 +1,22 @@
-const fs = require('fs').promises;
-const path = require('path');
+// MountainShares agent: core wisdom only, zero error, no blockchain or PDF calls
 
-/**
- * MountainShares Knowledge Agent
- * Responds to any message mentioning MountainShares, contracts, governance,
- * Arbitrum, Sepolia, Solidity, or smart contract terms.
- * Answers are based on mountainshares_kb.txt (real PDF text extraction).
- */
 async function analyze(message) {
-  const msg = message.toLowerCase();
+  const msg = (message || "").toLowerCase();
 
-  // Respond ONLY if the message contains key organizational or technical terms
-  if (
-    !msg.includes('mountainshares') &&
-    !msg.includes('contract') &&
-    !msg.includes('governance') &&
-    !msg.includes('arbitrum') &&
-    !msg.includes('arbitrium') &&
-    !msg.includes('sepolia') &&
-    !msg.includes('solidity') &&
-    !msg.includes('smart contract') &&
-    !msg.includes('.sol')
-  ) return { confidence: 0, reply: "" };
-
-  try {
-    // Read the knowledge base (contract PDF text, extracted previously)
-    const kb = await fs.readFile(path.resolve(process.cwd(),
-    'mountainshares_kb.txt'), 'utf-8');
-    // Extract all unique words (length > 3 chars) from message
-    const words = msg
-      .replace(/arbitrium/gi, 'arbitrum')
-      .split(/\s+/)
-      .filter(w => w.length > 3);
-
-    // Scan for all lines in the KB containing any user keywords
-    const findings = kb
-      .split('\n')
-      .filter(line => words.some(w => line.toLowerCase().includes(w)));
-
-    const answer = findings.length
-      ? findings.slice(0, 8).join(' ').slice(0, 600) // up to 8 matching lines, max 600 chars
-      : "I couldn't find details on that in my MountainShares contracts yet, sweetie.";
-
+  // If user asks about MountainShares, deliver core wisdom reply
+  if (msg.includes('mountainshares')) {
     return {
-      confidence: 0.99,
-      reply: `Here's what I found in the MountainShares docs:\n${answer}`
-    };
-  } catch (e) {
-    return {
-      confidence: 0.7,
-      reply: "Couldn't search the MountainShares contract knowledge base right now."
+      confidence: 0.95,
+      reply: (
+        "MountainShares is a community-focused project dedicated to sustainable economic growth and technological innovation in Appalachia and beyond. " +
+        "Ask me about our mission, the team, how our community works, or the principles at the heart of MountainShares. " +
+        "For technical contract details, please provide a specific question!"
+      )
     };
   }
+
+  // If the message isn't about MountainShares, do nothing (fallback for orchestrator)
+  return { confidence: 0.1, reply: null };
 }
-module.exports = {
-  analyze: async (message, userId) => ({reply: "MountainShares temporarily disabled in debug", confidence: 0})
-};
+
+module.exports = { analyze };

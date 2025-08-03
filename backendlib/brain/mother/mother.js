@@ -13,14 +13,14 @@ async function converse(message, userId) {
         confidence: res.confidence || 0,
         reply: res.reply || ''
       });
-    } catch { /* skip failed/disabled agent */ }
+    } catch (e) { /* skip failed agents */ }
   }
   const filteredReplies = filters.applyFilters(agentReplies, message, userId);
   const bestReply = judge.pickWinner(filteredReplies, message, userId);
   return {
     reply: bestReply.reply,
     agent: bestReply.name,
-    time: Date.now(),
+    time: Date.now()
   };
 }
 

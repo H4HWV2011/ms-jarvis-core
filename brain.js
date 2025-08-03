@@ -1,1 +1,0 @@
-const brain = require('./brain');
