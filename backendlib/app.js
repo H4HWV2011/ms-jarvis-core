@@ -1,7 +1,9 @@
+console.log("[DEBUG] Entered backendlib/app.js");
 const express = require('express');
 const cors = require('cors');
 const app = express();
 const brain = require('./brain');
+console.log("[DEBUG] backendlib/app.js: brain imported");
 
 const allowedOrigins = [
   'https://ms.jarvis.mountainshares.us',

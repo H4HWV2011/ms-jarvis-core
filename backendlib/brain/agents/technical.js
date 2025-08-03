@@ -1,3 +1,4 @@
+console.log("[DEBUG] Entered technical agent");
 // Technical wisdom agent
 async function analyze(message) {
   const msg = message.toLowerCase();
