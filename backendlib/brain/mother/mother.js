@@ -11,9 +11,9 @@ async function converse(message, userId) {
       agentReplies.push({
         name: agentName,
         confidence: res.confidence || 0,
-        reply: res.reply || '',
+        reply: res.reply || ''
       });
-    } catch { /* skip failed agent */ }
+    } catch { /* skip failed/disabled agent */ }
   }
   const filteredReplies = filters.applyFilters(agentReplies, message, userId);
   const bestReply = judge.pickWinner(filteredReplies, message, userId);
