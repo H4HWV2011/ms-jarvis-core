@@ -1,68 +1,17 @@
-// api/chat-with-mountainshares-brain.js
-import path from 'path';
-import fs from 'fs';
-import pdfParse from 'pdf-parse';
-
-// Make sure MsJarvisPDFs folder exists and is inside your project repo
-const PDF_DIR = path.join(process.cwd(), 'backendlib/brain/MsJarvisPDFs');
-let paragraphs = [];
-
-// On first call, read and split all PDFs into semantic paragraphs
-async function loadAllPdfs() {
-  paragraphs = [];
-  if (!fs.existsSync(PDF_DIR)) return;
-  const fileList = fs.readdirSync(PDF_DIR).filter(f => f.toLowerCase().endsWith('.pdf'));
-  for (const file of fileList) {
-    const pdfPath = path.join(PDF_DIR, file);
-    try {
-      const dataBuffer = fs.readFileSync(pdfPath);
-      const data = await pdfParse(dataBuffer);
-      let docs = data.text.split(/\n{2,}/g).map(s => s.trim()).filter(Boolean);
-      docs.forEach((text, idx) => {
-        paragraphs.push({
-          file: file,
-          index: idx,
-          text
-        });
-      });
-    } catch (err) {
-      paragraphs.push({
-        file,
-        index: 0,
-        text: `Failed to read ${pdfPath}: ${err && err.message ? err.message : err}`
-      });
-    }
-  }
-}
-
-// Only load once per cold start
-let loaded = false;
-
-function semanticScore(a, b) {
-  a = a.toLowerCase().replace(/[^a-z0-9 ]/g, ' ');
-  b = b.toLowerCase().replace(/[^a-z0-9 ]/g, ' ');
-  const aWords = new Set(a.split(/\s+/).filter(Boolean));
-  const bWords = new Set(b.split(/\s+/).filter(Boolean));
-  let match = 0;
-  aWords.forEach(word => { if (bWords.has(word)) match++; });
-  return match / (1 + bWords.size);
-}
-
-function findSectionHeading(paragraphs, idx) {
-  for (let i = idx; i >= Math.max(0, idx-3); i--) {
-    const para = paragraphs[i].text.trim();
-    if (/^[A-Z][A-Z \-:0-9]{5,}$/.test(para)) {
-      return para.replace(/\n+/g, " ").trim();
-    }
-  }
-  return null;
-}
-
 export default async function handler(req, res) {
+  // === Add CORS headers on every request ===
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Or replace * with your domain for more security
+  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    res.status(200).end(); // CORS preflight
+    return;
+  }
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
+
   if (!loaded) {
     await loadAllPdfs();
     loaded = true;
