@@ -1,7 +1,2 @@
-console.log("[DEBUG] brain/index.js start");
-// Main entry point for Ms. Jarvis Brain
-const mother = require('./mother/mother');
-console.log("[DEBUG] mother loaded in brain/index.js");
-module.exports = {
-  converse: mother.converse
-};
+console.log("[DEBUG] brain/index.js: minimal start");
+module.exports = { converse: async () => ({reply:"Minimal brain active", agent:"test", time:Date.now()}) };
