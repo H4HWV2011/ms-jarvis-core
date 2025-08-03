@@ -3,7 +3,6 @@ const cors = require('cors');
 const path = require('path');
 const app = express();
 
-// === BEGIN: Production-ready CORS config for Ms. Jarvis API ===
 const allowedOrigins = [
   'https://ms.jarvis.mountainshares.us',
   'https://ms-jarvis-frontend-oz0li2540-h4hwv2011s-projects.vercel.app',
@@ -18,7 +17,6 @@ app.use(cors({
     return callback(new Error('CORS not allowed from this origin'), false);
   }
 }));
-// === END CORS ===
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -32,7 +30,6 @@ app.get('/mountainshares/ecosystem-status', (req, res) => {
 });
 
 const brain = require('./app/brain');
-
 app.post('/chat-with-mountainshares-brain', async (req, res) => {
   const message = req.body.message || '';
   const userId = req.body.userId || '';
@@ -42,6 +39,11 @@ app.post('/chat-with-mountainshares-brain', async (req, res) => {
     agent: result.agent,
     time: result.time
   });
+});
+
+// TEST ENDPOINT FOR DEPLOYMENT TROUBLESHOOTING
+app.get('/test-api-alive', (req, res) => {
+  res.json({ alive: true, time: Date.now() });
 });
 
 app.get('/', (req, res) => {
