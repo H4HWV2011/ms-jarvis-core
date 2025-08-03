@@ -1,5 +1,4 @@
-console.log("[DEBUG] api/index.js serverless function started");
-const serverless = require('serverless-http');
-const app = require('../backendlib/app');
-
-module.exports = serverless(app);
+console.log("[DEBUG] api/index.js: pure function mode");
+module.exports = (req, res) => {
+  res.json({ test: "api index only", time: Date.now() });
+};
