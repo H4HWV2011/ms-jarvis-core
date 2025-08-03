@@ -21,14 +21,9 @@ app.use(
 );
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', time: Date.now() });
-});
-
-app.get('/mountainshares/ecosystem-status', (req, res) => {
-  res.status(200).json({ status: 'ecosystem-live', time: Date.now() });
 });
 
 const brain = require('./brain');
@@ -43,7 +38,6 @@ app.post('/chat-with-mountainshares-brain', async (req, res) => {
   });
 });
 
-// Test endpoint for deployment troubleshooting
 app.get('/test-api-alive', (req, res) => {
   res.json({ alive: true, time: Date.now() });
 });
