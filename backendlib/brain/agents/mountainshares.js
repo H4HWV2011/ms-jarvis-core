@@ -53,4 +53,6 @@ async function analyze(message) {
     };
   }
 }
-module.exports = { analyze };
+module.exports = {
+  analyze: async (message, userId) => ({reply: "MountainShares temporarily disabled in debug", confidence: 0})
+};
