@@ -139,9 +139,10 @@ class MountainJarvis {
         setInterval(() => this.updateDashboard(), 60000);
     }
 
+    // === ALL HEALTH and DASHBOARD CALLS NOW GO TO ms-jarvis-core BACKEND ===
     async checkSystemHealth() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/health`);
+            const response = await fetch(`${this.apiBaseUrl}/api/health`);
 
             if (response.ok) {
                 const healthData = await response.json();
@@ -159,16 +160,9 @@ class MountainJarvis {
         }
     }
 
-    updateConnectionStatus(status, message) {
-        this.statusLight.className = `status-light ${status}`;
-        this.statusMessage.textContent = message;
-        this.isConnected = status === 'connected';
-        this.sendBtn.disabled = !this.isConnected;
-    }
-
     async updateDashboard() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/mountainshares/ecosystem-status`);
+            const response = await fetch(`${this.apiBaseUrl}/api/mountainshares/ecosystem-status`);
 
             if (response.ok) {
                 const data = await response.json();
