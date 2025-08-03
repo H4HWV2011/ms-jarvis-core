@@ -1,6 +1,6 @@
 module.exports = {
   technical: require('./technical')
-  spiritual: require('./spiritual'),
+  spiritual: require('./spiritual')
   // emotional: require('./emotional'),
   // creative: require('./creative'),
   // mountainshares: require('./mountainshares')

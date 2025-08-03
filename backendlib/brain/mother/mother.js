@@ -1,11 +1,6 @@
-console.log("[DEBUG] mother.js start");
-// Mother orchestrator: calls all agents, runs filters, calls judge
 const agents = require('../agents');
-console.log("[DEBUG] agents loaded in mother");
 const judge = require('../judge');
-console.log("[DEBUG] agents loaded in mother");
 const filters = require('../filters');
-console.log("[DEBUG] agents loaded in mother");
 
 async function converse(message, userId) {
   const agentReplies = [];
