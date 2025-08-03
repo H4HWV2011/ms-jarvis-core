@@ -4,4 +4,4 @@ module.exports = {
     agent: "Mother",
     time: Date.now()
   })
-}
+};

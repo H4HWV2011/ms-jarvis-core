@@ -10,13 +10,15 @@ const allowedOrigins = [
   'http://localhost:4000'
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error('CORS not allowed from this origin'), false);
-  }
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error('CORS not allowed from this origin'), false);
+    },
+  })
+);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -29,7 +31,7 @@ app.get('/mountainshares/ecosystem-status', (req, res) => {
   res.status(200).json({ status: 'ecosystem-live', time: Date.now() });
 });
 
-const brain = require('./app/brain');
+const brain = require('./brain');
 app.post('/chat-with-mountainshares-brain', async (req, res) => {
   const message = req.body.message || '';
   const userId = req.body.userId || '';
@@ -37,11 +39,11 @@ app.post('/chat-with-mountainshares-brain', async (req, res) => {
   res.status(200).json({
     reply: result.reply,
     agent: result.agent,
-    time: result.time
+    time: result.time,
   });
 });
 
-// TEST ENDPOINT FOR DEPLOYMENT TROUBLESHOOTING
+// Test endpoint for deployment troubleshooting
 app.get('/test-api-alive', (req, res) => {
   res.json({ alive: true, time: Date.now() });
 });
