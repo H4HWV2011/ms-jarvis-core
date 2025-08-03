@@ -54,3 +54,11 @@ app.get('/', (req, res) => {
 });
 
 module.exports = app;
+
+// --- START THIS APP LOCALLY ONLY IF DIRECTLY RUN ---
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Ms. Jarvis API running locally on port ${PORT}`);
+  });
+}
