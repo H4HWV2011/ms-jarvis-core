@@ -40,4 +40,13 @@ app.get('/test-api-alive', (req, res) => {
 app.get('/', (req, res) => {
   res.status(200).send("Ms. Jarvis at your service darlin'!");
 });
+
 module.exports = app;
+
+// For local development only:
+if (require.main === module) {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, () => {
+    console.log(`Ms. Jarvis backend running locally on port ${PORT}`);
+  });
+}
