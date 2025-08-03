@@ -18,7 +18,6 @@ app.use(cors({
 }));
 app.use(express.json());
 
-const brain = require('./brain');
 app.post('/chat-with-mountainshares-brain', async (req, res) => {
   const message = req.body.message || '';
   const userId = req.body.userId || '';
@@ -33,9 +32,11 @@ app.post('/chat-with-mountainshares-brain', async (req, res) => {
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', time: Date.now() });
 });
+
 app.get('/test-api-alive', (req, res) => {
   res.json({ alive: true, time: Date.now() });
 });
+
 app.get('/', (req, res) => {
   res.status(200).send("Ms. Jarvis at your service darlin'!");
 });
