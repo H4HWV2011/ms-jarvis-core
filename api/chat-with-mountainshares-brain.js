@@ -1,3 +1,4 @@
+console.log('[DEBUG] ms-jarvis: Function file loaded!');
 // api/chat-with-mountainshares-brain.js
 const path = require('path');
 const fs = require('fs');
@@ -55,6 +56,8 @@ function findSectionHeading(paragraphs, idx) {
 }
 
 module.exports = async (req, res) => {
+ console.log('[DEBUG] ms-jarvis: Handler entered for', (typeof req !== 'undefined' 
+  && req.method) ? req.method : 'unknown');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
