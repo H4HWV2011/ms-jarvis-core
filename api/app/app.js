@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const app = express();
 
 const allowedOrigins = [
@@ -9,22 +8,14 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:4000'
 ];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error('CORS not allowed from this origin'), false);
-    },
-  })
-);
-
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('CORS not allowed from this origin'), false);
+  }
+}));
 app.use(express.json());
-
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', time: Date.now() });
-});
 
 const brain = require('./brain');
 app.post('/chat-with-mountainshares-brain', async (req, res) => {
@@ -38,12 +29,13 @@ app.post('/chat-with-mountainshares-brain', async (req, res) => {
   });
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', time: Date.now() });
+});
 app.get('/test-api-alive', (req, res) => {
   res.json({ alive: true, time: Date.now() });
 });
-
 app.get('/', (req, res) => {
   res.status(200).send("Ms. Jarvis at your service darlin'!");
 });
-
 module.exports = app;
