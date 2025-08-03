@@ -11,7 +11,7 @@ async function converse(message, userId) {
       agentReplies.push({
         name: agentName,
         confidence: res.confidence || 0,
-        reply: res.reply || ''
+        reply: res.reply || '',
       });
     } catch { /* skip failed agent */ }
   }
@@ -20,7 +20,7 @@ async function converse(message, userId) {
   return {
     reply: bestReply.reply,
     agent: bestReply.name,
-    time: Date.now()
+    time: Date.now(),
   };
 }
 
