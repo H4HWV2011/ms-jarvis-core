@@ -13,7 +13,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // Allow curl/server-to-server
+    if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
     return callback(new Error('CORS not allowed from this origin'), false);
   }
@@ -23,24 +23,20 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', time: Date.now() });
 });
 
-// --- Ecosystem status endpoint
 app.get('/mountainshares/ecosystem-status', (req, res) => {
   res.status(200).json({ status: 'ecosystem-live', time: Date.now() });
 });
 
-// --- Modular Council-of-Agents brain logic ---
-const brain = require('./app/brain'); // Uses mother/orchestrator
+const brain = require('./app/brain');
 
 app.post('/chat-with-mountainshares-brain', async (req, res) => {
   const message = req.body.message || '';
   const userId = req.body.userId || '';
   const result = await brain.converse(message, userId);
-
   res.status(200).json({
     reply: result.reply,
     agent: result.agent,
@@ -48,17 +44,8 @@ app.post('/chat-with-mountainshares-brain', async (req, res) => {
   });
 });
 
-// --- Friendly root endpoint ---
 app.get('/', (req, res) => {
   res.status(200).send("Ms. Jarvis at your service darlin'!");
 });
 
 module.exports = app;
-
-// --- START THIS APP LOCALLY ONLY IF DIRECTLY RUN ---
-if (require.main === module) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Ms. Jarvis API running locally on port ${PORT}`);
-  });
-}
