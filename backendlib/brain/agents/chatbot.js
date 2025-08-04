@@ -1,5 +1,7 @@
 // backendlib/brain/agents/chatbot.js
-const fetch = require('node-fetch');
+// Ms. Jarvis LLM chatbot agent: local Ollama-powered, always replies!
+
+const fetch = require('node-fetch'); // Ensure node-fetch@2 is installed in package.json
 
 async function analyze(message) {
   if (!message || message.trim() === "") {
@@ -10,12 +12,13 @@ async function analyze(message) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "llama3",
+        model: "llama3",      // Use "llama3" or any other model you pulled with Ollama
         prompt: message,
-        stream: false
+        stream: false         // Simple reply (not streaming)
       })
     });
     const data = await response.json();
+    // Ollama returns LLM reply in 'response' field
     return {
       confidence: 1,
       reply: data.response || "I'm here for you, but didn't get a response from my local brain."
@@ -27,4 +30,5 @@ async function analyze(message) {
     };
   }
 }
+
 module.exports = { analyze };
