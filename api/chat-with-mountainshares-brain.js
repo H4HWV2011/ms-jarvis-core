@@ -1,3 +1,4 @@
+// api/chat-with-mountainshares-brain.js
 const agents = require('../backendlib/brain/agents');
 
 module.exports = async (req, res) => {
@@ -31,7 +32,8 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const reply = await agent.analyze({ message, persona });
+    // FIX: Pass only message string
+    const reply = await agent.analyze(message);
     res.status(200).json({ reply });
   } catch (err) {
     res.status(500).json({ error: 'Agent error', details: err.toString() });
