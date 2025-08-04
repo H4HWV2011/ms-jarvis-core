@@ -32,12 +32,13 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // FIX: Pass only message string
-    const reply = await agent.analyze(message);
-    let textReply = reply && typeof reply === 'object' ? reply.reply : reply;
-    if (!textReply) textReply = "I'm not sure how to answer that right now, but I'm always here to help!";
-    res.status(200).json({ reply: textReply });
-  } catch (err) {
-    res.status(500).json({ error: 'Agent error', details: err.toString() });
-  }
+  const result = await agent.analyze(message);
+  // Always return a reply string, never null
+  let textReply = result && typeof result === 'object' ? result.reply : result;
+  if (!textReply) textReply = "I'm your Appalachian AI, always here for a chat—just ask away!";
+  res.status(200).json({ reply: textReply });
+} catch (err) {
+  res.status(500).json({ error: 'Agent error', details: err.toString() });
+}
+
 };
