@@ -4,5 +4,6 @@ module.exports = {
   spiritual: require('./spiritual'),
   emotional: require('./emotional'),
   mountainshares: require('./mountainshares_doc'),
+  chatbot: require('./chatbot'),
   // ...etc
 };
