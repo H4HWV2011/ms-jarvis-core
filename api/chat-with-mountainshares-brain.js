@@ -34,7 +34,9 @@ module.exports = async (req, res) => {
   try {
     // FIX: Pass only message string
     const reply = await agent.analyze(message);
-    res.status(200).json({ reply });
+    let textReply = reply && typeof reply === 'object' ? reply.reply : reply;
+    if (!textReply) textReply = "I'm not sure how to answer that right now, but I'm always here to help!";
+    res.status(200).json({ reply: textReply });
   } catch (err) {
     res.status(500).json({ error: 'Agent error', details: err.toString() });
   }
