@@ -7,7 +7,7 @@ const KNOWN_PERSONAS = {
   spiritual: true,
   emotional: true,
   mountainshares: true,
-  chatbot: true, // <-- 6th persona!
+  chatbot: true, // <-- Add/remove as supported
 };
 
 module.exports = async (req, res) => {
