@@ -1,4 +1,3 @@
-// Mother orchestrator: calls all agents, runs filters, calls judge
 const agents = require('../agents');
 const judge = require('../judge');
 const filters = require('../filters');
@@ -14,7 +13,7 @@ async function converse(message, userId) {
         confidence: res.confidence || 0,
         reply: res.reply || ''
       });
-    } catch { /* skip failed agent */ }
+    } catch (e) { /* skip failed agents */ }
   }
   const filteredReplies = filters.applyFilters(agentReplies, message, userId);
   const bestReply = judge.pickWinner(filteredReplies, message, userId);

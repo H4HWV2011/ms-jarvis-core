@@ -1,9 +1,9 @@
 module.exports = {
   technical: require('./technical'),
+  creative: require('./creative'),
   spiritual: require('./spiritual'),
   emotional: require('./emotional'),
-  creative: require('./creative'),
-  mountainshares: require('./mountainshares'),
-  sepolia: require('./sepolia'),
-  arbitrum: require('./arbitrum')
+  mountainshares: require('./mountainshares_doc'),
+  chatbot: require('./chatbot'),
+  // ...etc
 };

@@ -1,2 +1,4 @@
 ms-jarvis-backup.tar.gz
 .vercel
+node_modules/
+venv/

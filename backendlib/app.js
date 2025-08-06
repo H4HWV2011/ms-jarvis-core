@@ -1,7 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
+
+console.log("[DEBUG] backendlib/app.js start");
 const brain = require('./brain');
+console.log("[DEBUG] brain imported in app.js");
 
 const allowedOrigins = [
   'https://ms.jarvis.mountainshares.us',
@@ -9,6 +13,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:4000'
 ];
+
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
@@ -16,6 +21,7 @@ app.use(cors({
     return callback(new Error('CORS not allowed from this origin'), false);
   }
 }));
+
 app.use(express.json());
 
 app.post('/chat-with-mountainshares-brain', async (req, res) => {
@@ -40,4 +46,13 @@ app.get('/test-api-alive', (req, res) => {
 app.get('/', (req, res) => {
   res.status(200).send("Ms. Jarvis at your service darlin'!");
 });
+
 module.exports = app;
+
+// For local development only:
+if (require.main === module) {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, () => {
+    console.log(`Ms. Jarvis backend running locally on port ${PORT}`);
+  });
+}
