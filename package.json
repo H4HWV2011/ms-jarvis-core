@@ -1,0 +1,48 @@
+{
+  "name": "ms-jarvis-core",
+  "version": "1.0.0",
+  "description": "Ms. Jarvis AI Assistant API Server - Mount Hope, WV",
+  "main": "api-server.js",
+  "scripts": {
+    "start": "node api-server.js",
+    "build": "echo 'Ms. Jarvis Core - No build step required for Node.js backend'",
+    "dev": "nodemon api-server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "get-port": "^7.1.0",
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/H4HWV2011/Ms-Jarvis-Core.git"
+  },
+  "keywords": [
+    "ai",
+    "assistant",
+    "appalachian",
+    "mount-hope",
+    "west-virginia",
+    "mountainshares",
+    "blockchain",
+    "community-development"
+  ],
+  "author": "H4HWV2011",
+  "license": "ISC",
+  "directories": {
+    "test": "tests"
+  },
+  "bugs": {
+    "url": "https://github.com/H4HWV2011/Ms-Jarvis-Core/issues"
+  },
+  "homepage": "https://github.com/H4HWV2011/Ms-Jarvis-Core#readme"
+}

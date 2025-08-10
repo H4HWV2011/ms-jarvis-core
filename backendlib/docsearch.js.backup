@@ -1,0 +1,108 @@
+const fs = require('fs');
+const path = require('path');
+
+// Production-compatible document loading
+const TXT_DIR = process.env.VERCEL ? 
+  path.join(__dirname, '../knowledge') : 
+  (process.env.DOC_KB_PATH || process.env.HOME || '/home/h4hwv');
+
+function loadDocuments() {
+  const docs = {};
+  try {
+    const files = fs.readdirSync(TXT_DIR);
+    files.forEach(file => {
+      if (file.endsWith('.txt')) {
+        const full = path.join(TXT_DIR, file);
+        try {
+          const content = fs.readFileSync(full, 'utf-8');
+          if (content.length > 100) {
+            docs[file] = content;
+          }
+        } catch (e) {
+          console.log(`Skipping ${file}: ${e.message}`);
+        }
+      }
+    });
+  } catch (e) {
+    console.error('Error loading documents:', e);
+  }
+  console.log(`Loaded ${Object.keys(docs).length} knowledge documents`);
+  return docs;
+}
+
+// [Include your enhanced searchDocuments function here - keeping the TF-IDF scoring]
+function searchDocuments(query, docs, topK = 5) {
+  const qwords = query.toLowerCase().split(/\W+/).filter(w => w.length > 2);
+  let found = [];
+  
+  const termDocCounts = {};
+  const totalDocs = Object.keys(docs).length;
+  
+  qwords.forEach(term => {
+    termDocCounts[term] = 0;
+    Object.values(docs).forEach(content => {
+      if (content.toLowerCase().includes(term)) {
+        termDocCounts[term]++;
+      }
+    });
+  });
+
+  for (const [fname, txt] of Object.entries(docs)) {
+    const isLargeGenericDoc = txt.length > 1000000;
+    const paras = txt.split(/\n\s*\n/);
+    
+    for (const p of paras) {
+      const pLower = p.toLowerCase();
+      let matches = 0;
+      let totalRelevance = 0;
+      let exactPhraseBonus = 0;
+
+      const queryLower = query.toLowerCase().replace(/[^\w\s]/g, '');
+      if (pLower.includes(queryLower)) {
+        exactPhraseBonus = 10000;
+      }
+
+      qwords.forEach(q => {
+        const termCount = (pLower.match(new RegExp(`\\b${q}\\b`, 'g')) || []).length;
+        if (termCount > 0) {
+          matches += termCount;
+          const docFrequency = termDocCounts[q] || 1;
+          const idfWeight = Math.log(totalDocs / docFrequency) + 1;
+          totalRelevance += termCount * q.length * idfWeight * 100;
+        }
+      });
+
+      const filenameLower = fname.toLowerCase();
+      let filenameBonus = 0;
+      qwords.forEach(q => {
+        if (filenameLower.includes(q)) {
+          const docFreq = termDocCounts[q] || 1;
+          const idfWeight = Math.log(totalDocs / docFreq) + 1;
+          filenameBonus += 500 * idfWeight;
+        }
+      });
+
+      if (matches > 0 && p.trim().length > 50) {
+        let finalScore = totalRelevance + exactPhraseBonus + filenameBonus;
+        if (isLargeGenericDoc) finalScore = finalScore * 0.05;
+
+        found.push({
+          file: fname.replace('.txt', ''),
+          paragraph: p.trim().slice(0, 800),
+          score: Math.round(finalScore),
+          matches: matches,
+          exactPhrase: exactPhraseBonus > 0,
+          filenameMatch: filenameBonus > 0
+        });
+      }
+    }
+  }
+
+  found.sort((a, b) => b.score - a.score);
+  return found.slice(0, topK);
+}
+
+module.exports = {
+  loadDocuments,
+  searchDocuments,
+};

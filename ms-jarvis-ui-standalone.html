@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms. Jarvis - AI Assistant from Mount Hope, WV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --warm-orange: #d2691e;
+            --soft-orange: #f4a460;
+            --rust-red: #b8860b;
+            --mountain-blue: #4682b4;
+            --forest-green: #556b2f;
+            --warm-cream: #f5deb3;
+            --dark-bg: #1a1612;
+            --darker-bg: #141110;
+            --card-bg: #241f1a;
+            --text-primary: #f5deb3;
+            --text-secondary: #d2b48c;
+            --text-muted: #a0856b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            background: var(--darker-bg);
+            border: 1px solid rgba(210, 105, 30, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(210, 105, 30, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, 
+                rgba(36, 31, 26, 0.95) 0%, 
+                rgba(26, 22, 18, 0.95) 100%);
+            border-bottom: 1px solid rgba(210, 105, 30, 0.3);
+        }
+
+        .ms-jarvis-portrait {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--warm-orange);
+            box-shadow: 
+                0 0 30px rgba(210, 105, 30, 0.4),
+                0 0 60px rgba(210, 105, 30, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--warm-orange) 0%, var(--mountain-blue) 100%);
+        }
+
+        /* Ms. Jarvis Image Styling */
+        .ms-jarvis-portrait img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .ms-jarvis-portrait:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Fallback styling when image is not available */
+        .ms-jarvis-portrait-fallback {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, var(--warm-orange) 0%, var(--mountain-blue) 100%);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Show fallback when image fails or is not loaded */
+        .ms-jarvis-portrait.image-failed .ms-jarvis-portrait-fallback,
+        .ms-jarvis-portrait:not(.image-loaded) .ms-jarvis-portrait-fallback {
+            opacity: 1;
+        }
+
+        .ms-jarvis-portrait.image-failed img,
+        .ms-jarvis-portrait:not(.image-loaded) img {
+            opacity: 0;
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            background: #22c55e;
+            border: 3px solid var(--darker-bg);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            z-index: 10;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .message-container {
+            background: var(--dark-bg);
+        }
+
+        .message-assistant {
+            background: var(--card-bg);
+            border: 1px solid rgba(210, 105, 30, 0.2);
+            border-left: 4px solid var(--warm-orange);
+        }
+
+        .message-user {
+            background: rgba(70, 130, 180, 0.15);
+            border: 1px solid rgba(70, 130, 180, 0.3);
+            border-right: 4px solid var(--mountain-blue);
+        }
+
+        .avatar-assistant {
+            background: linear-gradient(135deg, var(--warm-orange) 0%, var(--soft-orange) 100%);
+            border: 2px solid var(--warm-orange);
+            box-shadow: 0 4px 20px rgba(210, 105, 30, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Small avatar image in messages */
+        .avatar-assistant img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 50%;
+        }
+
+        .avatar-assistant-fallback {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .avatar-assistant.image-failed .avatar-assistant-fallback,
+        .avatar-assistant:not(.image-loaded) .avatar-assistant-fallback {
+            opacity: 1;
+        }
+
+        .avatar-assistant.image-failed img,
+        .avatar-assistant:not(.image-loaded) img {
+            opacity: 0;
+        }
+
+        .avatar-user {
+            background: linear-gradient(135deg, var(--mountain-blue) 0%, #5a9bd4 100%);
+            border: 2px solid var(--mountain-blue);
+            box-shadow: 0 4px 20px rgba(70, 130, 180, 0.3);
+        }
+
+        .input-container {
+            background: var(--card-bg);
+            border-top: 1px solid rgba(210, 105, 30, 0.3);
+        }
+
+        .input-field {
+            background: var(--dark-bg);
+            border: 2px solid rgba(210, 105, 30, 0.3);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            min-height: 80px;
+        }
+
+        .input-field:focus {
+            border-color: var(--warm-orange);
+            box-shadow: 0 0 0 3px rgba(210, 105, 30, 0.1);
+            outline: none;
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, var(--warm-orange) 0%, var(--rust-red) 100%);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(210, 105, 30, 0.3);
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(210, 105, 30, 0.4);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--warm-orange);
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        .typing-dot:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% { 
+                transform: scale(0.8) translateY(0);
+                opacity: 0.6;
+            }
+            40% { 
+                transform: scale(1.2) translateY(-6px);
+                opacity: 1;
+            }
+        }
+
+        .specialist-badge {
+            background: linear-gradient(135deg, var(--warm-orange) 0%, var(--rust-red) 100%);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(210, 105, 30, 0.3);
+            box-shadow: 0 2px 10px rgba(210, 105, 30, 0.2);
+        }
+
+        .capability-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(210, 105, 30, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .capability-card:hover {
+            border-color: var(--warm-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(210, 105, 30, 0.2);
+        }
+
+        .message-bubble {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .glow-text {
+            color: var(--soft-orange);
+            text-shadow: 0 0 10px rgba(244, 164, 96, 0.5);
+        }
+
+        /* Enhanced portrait glow effect */
+        .ms-jarvis-portrait.image-loaded {
+            box-shadow: 
+                0 0 30px rgba(210, 105, 30, 0.6),
+                0 0 60px rgba(210, 105, 30, 0.3),
+                0 0 90px rgba(210, 105, 30, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="app-container w-full mx-auto h-screen overflow-hidden flex flex-col">
+        
+        <!-- Header with Ms. Jarvis Portrait -->
+        <div class="header px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="ms-jarvis-portrait" id="msJarvisPortrait">
+                        <img src="file:///C:/Users/aubre/Downloads/ms_jarvis_image1.jpg" 
+                             alt="Ms. Jarvis" 
+                             id="portraitImage"
+                             onerror="this.parentElement.classList.add('image-failed')"
+                             onload="this.parentElement.classList.add('image-loaded')">
+                        <div class="ms-jarvis-portrait-fallback">MJ</div>
+                        <div class="status-dot"></div>
+                    </div>
+                    <div>
+                        <h1 class="glow-text font-bold text-2xl">Ms. Jarvis</h1>
+                        <p class="text-text-secondary text-sm">AI Assistant • Mount Hope, West Virginia</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm font-medium" style="color: var(--text-secondary);">Online</div>
+                    <div class="text-xs" style="color: var(--text-muted);">Ready to help</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="flex-1 message-container overflow-hidden">
+            <div id="messagesContainer" class="h-full overflow-y-auto scrollbar-hide px-8 py-6 space-y-6">
+                
+                <!-- Welcome Message -->
+                <div class="message-bubble flex items-start space-x-4">
+                    <div class="avatar-assistant w-12 h-12 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" id="welcomeAvatar">
+                        <img src="file:///C:/Users/aubre/Downloads/ms_jarvis_image1.jpg" 
+                             alt="Ms. Jarvis" 
+                             onerror="this.parentElement.classList.add('image-failed')"
+                             onload="this.parentElement.classList.add('image-loaded')">
+                        <div class="avatar-assistant-fallback">MJ</div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="message-assistant rounded-2xl rounded-tl-sm px-6 py-4">
+                            <p class="text-base leading-relaxed mb-3" style="color: var(--text-primary);">
+                                Well, hey there, shugah! I'm Ms. Jarvis from Mount Hope, West Virginia. I'm here to help you with creative ideas, technical solutions, spiritual guidance, and financial planning.
+                            </p>
+                            <p class="text-sm" style="color: var(--text-secondary);">
+                                What can I do for you today, darlin'?
+                            </p>
+                            <div class="flex items-center justify-between mt-4">
+                                <div class="flex gap-2">
+                                    <div class="specialist-badge">🏔️ Welcome</div>
+                                </div>
+                                <span class="text-xs" style="color: var(--text-muted);" id="welcomeTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Typing Indicator -->
+                <div id="typingIndicator" class="message-bubble items-start space-x-4 typing-indicator">
+                    <div class="avatar-assistant w-12 h-12 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" id="typingAvatar">
+                        <img src="file:///C:/Users/aubre/Downloads/ms_jarvis_image1.jpg" 
+                             alt="Ms. Jarvis" 
+                             onerror="this.parentElement.classList.add('image-failed')"
+                             onload="this.parentElement.classList.add('image-loaded')">
+                        <div class="avatar-assistant-fallback">MJ</div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="message-assistant rounded-2xl rounded-tl-sm px-6 py-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <span class="text-sm ml-3" style="color: var(--text-secondary);">Ms. Jarvis is thinking...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-container px-4 py-6">
+            <div class="flex items-end space-x-4 w-full max-w-none">
+                <div class="flex-1 w-full">
+                    <textarea 
+                        id="messageInput"
+                        placeholder="Ask Ms. Jarvis anything..."
+                        class="input-field w-full rounded-2xl px-6 py-4 resize-none text-base"
+                        rows="3"
+                        style="max-height: 200px; min-height: 80px; width: 100%;"
+                    ></textarea>
+                </div>
+                <button 
+                    id="sendButton"
+                    class="send-button p-4 rounded-2xl disabled:opacity-50 flex-shrink-0"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MsJarvisDarkUI {
+            constructor() {
+                this.messages = [];
+                this.isLoading = false;
+                
+                this.messagesContainer = document.getElementById('messagesContainer');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.typingIndicator = document.getElementById('typingIndicator');
+                
+                this.init();
+            }
+            
+            init() {
+                document.getElementById('welcomeTime').textContent = this.formatTime(new Date());
+                
+                this.sendButton.addEventListener('click', () => this.handleSendMessage());
+                this.messageInput.addEventListener('keypress', (e) => this.handleKeyPress(e));
+                this.messageInput.addEventListener('input', () => this.autoResize());
+                
+                // Enhanced image loading with multiple fallbacks
+                this.initializeImages();
+                
+                this.autoResize();
+            }
+            
+            initializeImages() {
+                // Try multiple image sources for Ms. Jarvis
+                const imageSources = [
+                    'file:///C:/Users/aubre/Downloads/ms_jarvis_image1.jpg',
+                    'C:/Users/aubre/Downloads/ms_jarvis_image1.jpg',
+                    './ms_jarvis_image1.jpg',
+                    '../ms_jarvis_image1.jpg'
+                ];
+                
+                const portraits = document.querySelectorAll('.ms-jarvis-portrait img, .avatar-assistant img');
+                
+                portraits.forEach(img => {
+                    this.tryImageSources(img, imageSources, 0);
+                });
+            }
+            
+            tryImageSources(imgElement, sources, index) {
+                if (index >= sources.length) {
+                    // All sources failed, use fallback
+                    imgElement.parentElement.classList.add('image-failed');
+                    return;
+                }
+                
+                const testImg = new Image();
+                testImg.onload = () => {
+                    imgElement.src = sources[index];
+                    imgElement.parentElement.classList.add('image-loaded');
+                    imgElement.parentElement.classList.remove('image-failed');
+                };
+                testImg.onerror = () => {
+                    this.tryImageSources(imgElement, sources, index + 1);
+                };
+                testImg.src = sources[index];
+            }
+            
+            autoResize() {
+                this.messageInput.style.height = 'auto';
+                this.messageInput.style.height = Math.max(Math.min(this.messageInput.scrollHeight, 200), 80) + 'px';
+            }
+            
+            handleKeyPress(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.handleSendMessage();
+                }
+            }
+            
+            async handleSendMessage() {
+                const message = this.messageInput.value.trim();
+                if (!message || this.isLoading) return;
+                
+                this.addMessage({
+                    text: message,
+                    sender: 'user',
+                    timestamp: new Date()
+                });
+                
+                this.messageInput.value = '';
+                this.autoResize();
+                this.setLoading(true);
+                
+                setTimeout(() => {
+                    const response = this.generateResponse(message);
+                    this.addMessage({
+                        text: response.text,
+                        sender: 'assistant',
+                        timestamp: new Date(),
+                        badges: response.badges
+                    });
+                    this.setLoading(false);
+                }, 1500 + Math.random() * 1000);
+            }
+            
+            generateResponse(userMessage) {
+                const responses = {
+                    creative: {
+                        text: "I love creative challenges, shugah! Let me help you explore innovative approaches and artistic solutions. Whether it's design, writing, or creative problem-solving, I'm here to spark your imagination with that good ol' mountain creativity!",
+                        badges: ['🎨 Creative']
+                    },
+                    technical: {
+                        text: "Perfect, darlin'! I can assist with technical solutions, coding challenges, system design, and problem-solving. Let's dive into the details and find an effective approach that'll work just right for you.",
+                        badges: ['⚡ Technical']
+                    },
+                    spiritual: {
+                        text: "I'm honored to offer spiritual guidance, honey child. Sometimes we need clarity, peace, and wisdom to navigate life's journey. What's weighing on your heart today? Let's talk about it together.",
+                        badges: ['🙏 Spiritual']
+                    },
+                    financial: {
+                        text: "Smart thinking about your financial future, sugar! I can help with budgeting, investment strategies, financial planning, and wealth-building approaches tailored to your goals. Let's make your money work for you!",
+                        badges: ['💰 Financial']
+                    },
+                    default: {
+                        text: "Well, hey there! I'm here to help with whatever you need, darlin' - creative ideas, technical solutions, spiritual guidance, or financial planning. What would you like to explore together today?",
+                        badges: ['🏔️ Assistant']
+                    }
+                };
+                
+                const message = userMessage.toLowerCase();
+                
+                if (message.includes('creative') || message.includes('design') || message.includes('art')) {
+                    return responses.creative;
+                } else if (message.includes('technical') || message.includes('code') || message.includes('programming')) {
+                    return responses.technical;
+                } else if (message.includes('spiritual') || message.includes('guidance') || message.includes('wisdom')) {
+                    return responses.spiritual;
+                } else if (message.includes('financial') || message.includes('money') || message.includes('investment')) {
+                    return responses.financial;
+                } else {
+                    return responses.default;
+                }
+            }
+            
+            addMessage(message) {
+                const messageElement = this.createMessageElement(message);
+                this.messagesContainer.appendChild(messageElement);
+                this.scrollToBottom();
+            }
+            
+            createMessageElement(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-bubble flex items-start space-x-4';
+                
+                if (message.sender === 'user') {
+                    messageDiv.className += ' flex-row-reverse space-x-reverse';
+                    messageDiv.innerHTML = `
+                        <div class="avatar-user w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                            YOU
+                        </div>
+                        <div class="flex-1">
+                            <div class="message-user rounded-2xl rounded-tr-sm px-6 py-4">
+                                <p class="text-base leading-relaxed" style="color: var(--text-primary);">${this.escapeHtml(message.text)}</p>
+                                <div class="text-right mt-3">
+                                    <span class="text-xs" style="color: var(--text-muted);">${this.formatTime(message.timestamp)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const avatarId = `avatar-${Date.now()}`;
+                    messageDiv.innerHTML = `
+                        <div class="avatar-assistant w-12 h-12 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" id="${avatarId}">
+                            <img src="file:///C:/Users/aubre/Downloads/ms_jarvis_image1.jpg" 
+                                 alt="Ms. Jarvis" 
+                                 onerror="this.parentElement.classList.add('image-failed')"
+                                 onload="this.parentElement.classList.add('image-loaded')">
+                            <div class="avatar-assistant-fallback">MJ</div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="message-assistant rounded-2xl rounded-tl-sm px-6 py-4">
+                                <p class="text-base leading-relaxed" style="color: var(--text-primary);">${this.escapeHtml(message.text)}</p>
+                                <div class="flex items-center justify-between mt-4">
+                                    <div class="flex gap-2">
+                                        ${message.badges ? message.badges.map(badge => `<div class="specialist-badge">${badge}</div>`).join('') : ''}
+                                    </div>
+                                    <span class="text-xs" style="color: var(--text-muted);">${this.formatTime(message.timestamp)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Initialize image for the new avatar
+                    setTimeout(() => {
+                        const newAvatar = document.getElementById(avatarId);
+                        if (newAvatar) {
+                            const img = newAvatar.querySelector('img');
+                            const imageSources = [
+                                'file:///C:/Users/aubre/Downloads/ms_jarvis_image1.jpg',
+                                'C:/Users/aubre/Downloads/ms_jarvis_image1.jpg',
+                                './ms_jarvis_image1.jpg',
+                                '../ms_jarvis_image1.jpg'
+                            ];
+                            this.tryImageSources(img, imageSources, 0);
+                        }
+                    }, 100);
+                }
+                
+                return messageDiv;
+            }
+            
+            setLoading(loading) {
+                this.isLoading = loading;
+                this.sendButton.disabled = loading;
+                
+                if (loading) {
+                    this.typingIndicator.classList.add('active');
+                    this.scrollToBottom();
+                } else {
+                    this.typingIndicator.classList.remove('active');
+                }
+            }
+            
+            scrollToBottom() {
+                setTimeout(() => {
+                    this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+                }, 100);
+            }
+            
+            formatTime(date) {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            new MsJarvisDarkUI();
+        });
+    </script>
+</body>
+</html>

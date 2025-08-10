@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "functions": {
+    "api/health.js": {
+      "maxDuration": 30
+    },
+    "api/chat-with-mountainshares-brain.js": {
+      "maxDuration": 300
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": "/api/health.js"
+    },
+    {
+      "source": "/api/chat-with-mountainshares-brain",
+      "destination": "/api/chat-with-mountainshares-brain.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api/health.js"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,OPTIONS,POST"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

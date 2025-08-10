@@ -1,0 +1,60 @@
+// api/chat-with-mountainshares-brain.js
+// Production-ready API route: GPS-first geodetic metadata forwarding to brain.converse
+
+// Vercel runtime hints (kept at top; route still uses CommonJS export below)
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs18.x';
+
+// Use CommonJS require for backend CJS bundle
+const brain = require('../backendlib/brain');
+
+// Single, unambiguous handler (CommonJS). Do NOT add a second export default or extra module.exports.
+module.exports = async (req, res) => {
+  try {
+    // CORS allow-list
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://ms-jarvis-frontend-pink.vercel.app',
+      'https://ms.jarvis.mountainshares.us'
+    ];
+    const origin = req.headers.origin;
+    const isAllowedOrigin = allowedOrigins.includes(origin);
+
+    // CORS headers
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    // Preflight
+    if (req.method === 'OPTIONS') {
+      res.status(200).end();
+      return;
+    }
+
+    // Only POST accepted
+    if (req.method !== 'POST') {
+      res.status(405).json({
+        error: 'Method not allowed',
+        allowedMethods: ['POST', 'OPTIONS']
+      });
+      return;
+    }
+
+    // Parse body robustly
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+    const { message, userId, gpsLocation, location, coordinates } = body;
+
+    if (!message) {
+      res.status(400).json({
+        error: 'Message is required',
+        reply: "I need a message to help you, darlin'!",
+        agent: "Ms. Jarvis"
+      });
+      return;
+    }
+
+    // GPS-first request metadata for brain
+    const requestMetadata = {};
+    if (gpsLocation && gpsLocation.lat && gps
