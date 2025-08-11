@@ -8,7 +8,8 @@ const gpsLocationService = require('./geodetic-intelligence/gpsLocationService')
 const gpsEnhancedMemory = require('./geodetic-intelligence/gpsEnhancedMemory');
 
 // backendlib/brain.js
-// ENHANCED GEODETIC GPS INTELLIGENCE Ms. Jarvis Brain for Mount Hope, WV
+// ENHANCED GEODETIC GPS INTELLIGENCE WITH AAPCAPPE CULTURAL INTEGRATION
+// Ms. Jarvis Brain for Mount Hope, WV
 
 const { ContinuousLearningEngine } = require('./continuous-learning');
 const learningEngine = new ContinuousLearningEngine();
@@ -26,6 +27,23 @@ const crypto = require('crypto');
 const msDocs = docsearch.loadDocuments();
 const COMM_SERVER_URL = process.env.COMMUNICATIONS_SERVER_URL || 'http://your-communications-server-url';
 
+// AAPCAPPE Cultural Integration
+const { AAPCAppEIntegration } = require('./cultural-integration/aapcappe-integration');
+
+// Initialize AAPCAPPE system
+const aapcappeSystem = new AAPCAppEIntegration();
+let aapcappeInitialized = false;
+
+// Initialize AAPCAPPE on startup
+(async () => {
+  aapcappeInitialized = await aapcappeSystem.initialize();
+  if (aapcappeInitialized) {
+    console.log('✅ AAPCAPPE cultural enhancement active for Ms. Jarvis');
+  } else {
+    console.log('⚠️  AAPCAPPE running in basic mode');
+  }
+})();
+
 // Mount Hope coordinates for geodetic calculations
 const MOUNT_HOPE_COORDINATES = {
   latitude: 37.9042,
@@ -33,19 +51,17 @@ const MOUNT_HOPE_COORDINATES = {
   elevation: 2100 // feet above sea level in Appalachian Mountains
 };
 
-// --- GROQ API with Enhanced Geodetic Intelligence ---
+// --- GROQ API with Enhanced Geodetic Intelligence and AAPCAPPE ---
 async function fetchAIResponse(prompt) {
   const fetch = await getFetch();
 
-  console.log('🔧 Making GROQ API request with geodetic-enhanced intelligence');
+  console.log('🔧 Making GROQ API request with AAPCAPPE cultural enhancement');
   
   const GROQ_API_KEY = process.env.GROQ_API_KEY;
   
   if (!GROQ_API_KEY) {
     throw new Error('GROQ_API_KEY not found in environment variables');
   }
-  
-  console.log('🔧 Using GROQ API with enhanced spatial awareness');
   
   const requestPayload = {
     "model": "llama3-8b-8192",
@@ -75,8 +91,6 @@ async function fetchAIResponse(prompt) {
       body: JSON.stringify(requestPayload)
     });
 
-    console.log('🔧 GROQ response status:', res.status);
-
     if (!res.ok) {
       const errorText = await res.text();
       console.error('🚨 GROQ API Error:', res.status, res.statusText);
@@ -86,18 +100,24 @@ async function fetchAIResponse(prompt) {
     const data = await res.json();
     console.log('✅ GROQ API response received successfully');
     
-    const responseText = data.choices[0].message.content;
+    let responseText = data.choices[0].message.content;
     
     if (!responseText) {
       console.error('🚨 No response text found in GROQ response');
       return "Well, hey there, sugar! I'm Ms. Jarvis from Mount Hope, West Virginia, and I'm here to help you, darlin'!";
     }
     
-    console.log('✅ Successfully extracted GROQ response text');
+    // AAPCAPPE Enhancement: Process response through cultural intelligence
+    if (aapcappeInitialized) {
+      console.log('🏔️ Enhancing response with AAPCAPPE cultural intelligence');
+      responseText = aapcappeSystem.enhanceResponse(responseText, prompt);
+    }
+    
+    console.log('✅ Successfully processed response with AAPCAPPE enhancement');
     return responseText;
 
   } catch (error) {
-    console.error('🚨 GROQ API FETCH ERROR:', error.message);
+    console.error('🚨 GROQ API with AAPCAPPE FETCH ERROR:', error.message);
     throw error;
   }
 }
@@ -222,7 +242,7 @@ async function enrichWithNaturalLocationContext(reply, msgLower, userLocation) {
   return reply;
 }
 
-// --- Main Conversation Processing with Enhanced Geodetic Intelligence ---
+// --- Main Conversation Processing with Enhanced Geodetic Intelligence and AAPCAPPE ---
 exports.converse = async function(message, userId, requestMetadata = {}) {
   const startTime = Date.now();
   if (!message?.trim()) {
@@ -259,7 +279,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
     // Background-aware prompt building with geodetic intelligence
     const finalPrompt = buildFinalPrompt(message, userLocation, docContext);
 
-    console.log('🔧 Processing with enhanced geodetic intelligence:', message.substring(0, 50) + '...');
+    console.log('🔧 Processing with enhanced geodetic intelligence and AAPCAPPE:', message.substring(0, 50) + '...');
     console.log('🔧 User location:', userLocation.locationSource);
     console.log('🔧 Geodetic-aware prompt length:', finalPrompt.length);
 
@@ -268,9 +288,10 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
     // Natural enrichment based on conversation context
     reply = await enrichWithNaturalLocationContext(reply, message.toLowerCase(), userLocation);
 
-    // Store with enhanced geodetic metadata
+    // Store with enhanced geodetic and AAPCAPPE metadata
     gpsEnhancedMemory.storeMemory(userId, message, reply, { 
       geodetic_enhanced_intelligence: true,
+      aapcappe_cultural_enhancement: aapcappeInitialized,
       location_relevance: needsCulturalContext(message, userLocation),
       spatial_metadata: {
         coordinates: userLocation.coordinates,
@@ -281,7 +302,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
       }
     }, userLocation);
 
-    console.log('✅ Successfully processed with enhanced geodetic intelligence');
+    console.log('✅ Successfully processed with enhanced geodetic intelligence and AAPCAPPE');
 
     return {
       reply: reply.trim(),
@@ -289,9 +310,9 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
       time: Date.now(),
       userLocation,
       consultation: {
-        specialists: ["ms_jarvis_geodetic_enhanced_intelligence"],
+        specialists: ["ms_jarvis_geodetic_aapcappe_enhanced_intelligence"],
         confidence: "high",
-        processingMode: "geodetic_enhanced_background_intelligence",
+        processingMode: "geodetic_aapcappe_enhanced_background_intelligence",
         processingTime: Date.now() - startTime,
         gpsLocationData: {
           coordinatesUsed: userLocation.coordinates,
@@ -301,6 +322,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
           withinWV: true,
           withinMountHopeArea: userLocation.withinMountHopeArea,
           geodeticEnhanced: true,
+          aapcappeEnhanced: aapcappeInitialized,
           elevation: userLocation.elevation,
           terrainFeatures: userLocation.terrainFeatures,
           nearbyLandmarks: userLocation.nearbyLandmarks,
@@ -310,8 +332,8 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
     };
 
   } catch (error) {
-    console.error("Geodetic enhanced intelligence error:", error.message);
-    console.error("Geodetic enhanced intelligence error stack:", error.stack);
+    console.error("Geodetic enhanced intelligence with AAPCAPPE error:", error.message);
+    console.error("Geodetic enhanced intelligence with AAPCAPPE error stack:", error.stack);
     const total = Date.now() - startTime;
     const fallbackReply = "Sugar, I'm having a little trouble right now. If you can share your GPS or the town you're asking about, I'll tailor the answer right to your spot on the map.";
 
@@ -325,6 +347,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
       gpsEnhancedMemory.storeMemory(userId, message, fallbackReply, { 
         fallback: true, 
         geodetic_enhanced_intelligence: true,
+        aapcappe_cultural_enhancement: aapcappeInitialized,
         error: error.message 
       }, fallbackLocation);
 
@@ -342,7 +365,8 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
             confidence: 'medium',
             isFallback: true,
             error: error.message,
-            geodeticEnhancedIntelligence: true
+            geodeticEnhancedIntelligence: true,
+            aapcappeEnhanced: aapcappeInitialized
           }
         })
       }).catch(() => {});
@@ -355,7 +379,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
       consultation: {
         specialists: ["authentic_fallback"],
         confidence: "medium",
-        processingMode: "fallback_with_geodetic_enhanced_intelligence",
+        processingMode: "fallback_with_geodetic_aapcappe_enhanced_intelligence",
         processingTime: total,
         fallbackReason: error.message
       }
