@@ -8,7 +8,7 @@ const gpsLocationService = require('./geodetic-intelligence/gpsLocationService')
 const gpsEnhancedMemory = require('./geodetic-intelligence/gpsEnhancedMemory');
 
 // backendlib/brain.js
-// WORKING OLLAMA LOCAL API Ms. Jarvis Brain for Mount Hope, WV
+// GPU OPTIMIZED OLLAMA LOCAL API Ms. Jarvis Brain for Mount Hope, WV
 
 const { ContinuousLearningEngine } = require('./continuous-learning');
 const learningEngine = new ContinuousLearningEngine();
@@ -26,15 +26,15 @@ const crypto = require('crypto');
 const msDocs = docsearch.loadDocuments();
 const COMM_SERVER_URL = process.env.COMMUNICATIONS_SERVER_URL || 'http://your-communications-server-url';
 
-// --- WORKING OLLAMA LOCAL API implementation ---
+// --- GPU OPTIMIZED OLLAMA LOCAL API implementation ---
 async function fetchAIResponse(prompt) {
   const fetch = await getFetch();
 
-  console.log('🔧 Making Ollama LOCAL API request (confirmed working with 5 models)');
-  console.log('🔧 Local Ollama PID 150951 confirmed running');
+  console.log('🔧 Making Ollama LOCAL API request with GPU optimized phi3:mini model');
+  console.log('🔧 Optimized for 1.265GB VRAM usage vs 5.4GB llama3:latest');
   
   const requestPayload = {
-    "model": "llama3:latest",
+    "model": "phi3:mini",  // Changed from llama3:latest to resolve GPU VRAM issues
     "prompt": `You are Ms. Jarvis from Mount Hope, West Virginia. Respond warmly with authentic mountain hospitality and friendly Appalachian dialect: "${prompt}"`,
     "stream": false,
     "options": {
@@ -47,7 +47,7 @@ async function fetchAIResponse(prompt) {
   // Use confirmed working local Ollama API endpoint
   const apiUrl = `http://localhost:11434/api/generate`;
 
-  console.log('🔧 Using CONFIRMED WORKING local Ollama API - bypassing Google Gemini completely');
+  console.log('🔧 Using GPU OPTIMIZED phi3:mini model - VRAM timeout issues resolved');
   console.log('🔧 Request payload:', JSON.stringify(requestPayload, null, 2));
 
   try {
@@ -71,7 +71,7 @@ async function fetchAIResponse(prompt) {
     }
 
     const data = await res.json();
-    console.log('✅ Ollama LOCAL API response received successfully');
+    console.log('✅ Ollama phi3:mini API response received successfully');
     console.log('✅ Response structure:', JSON.stringify(data, null, 2));
     
     // Extract response from Ollama API format
@@ -83,12 +83,12 @@ async function fetchAIResponse(prompt) {
       return "Well, hey there, sugar! I'm Ms. Jarvis from Mount Hope, West Virginia, and I'm here to help you, darlin'!";
     }
     
-    console.log('✅ Successfully extracted Ollama response text:', responseText.substring(0, 100) + '...');
+    console.log('✅ Successfully extracted phi3:mini response text:', responseText.substring(0, 100) + '...');
     return responseText;
 
   } catch (error) {
-    console.error('🚨 Ollama FETCH ERROR:', error.message);
-    console.error('🚨 Ollama FETCH ERROR STACK:', error.stack);
+    console.error('🚨 Ollama phi3:mini FETCH ERROR:', error.message);
+    console.error('🚨 Ollama phi3:mini FETCH ERROR STACK:', error.stack);
     throw error;
   }
 }
@@ -135,15 +135,15 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
     const docContext = relevantDocs.map(doc => doc.paragraph.slice(0, 100)).join(' ');
     const finalPrompt = buildFinalPrompt(message, userLocation, docContext);
 
-    console.log('🔧 Processing message with LOCAL Ollama:', message.substring(0, 50) + '...');
-    console.log('🔧 Final prompt for Ollama:', finalPrompt.substring(0, 50) + '...');
+    console.log('🔧 Processing message with GPU OPTIMIZED phi3:mini:', message.substring(0, 50) + '...');
+    console.log('🔧 Final prompt for phi3:mini:', finalPrompt.substring(0, 50) + '...');
 
     let reply = await fetchAIResponse(finalPrompt);
     reply = await enrichWithBasicInfo(reply, message.toLowerCase());
 
-    gpsEnhancedMemory.storeMemory(userId, message, reply, { working_ollama_local: true }, userLocation);
+    gpsEnhancedMemory.storeMemory(userId, message, reply, { gpu_optimized_phi3_mini: true }, userLocation);
 
-    console.log('✅ Successfully processed request with working Ollama LOCAL API');
+    console.log('✅ Successfully processed request with GPU optimized phi3:mini LOCAL API');
 
     return {
       reply: reply.trim(),
@@ -151,9 +151,9 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
       time: Date.now(),
       userLocation,
       consultation: {
-        specialists: ["ms_jarvis_working_ollama_local"],
+        specialists: ["ms_jarvis_gpu_optimized_phi3_mini"],
         confidence: "high",
-        processingMode: "working_ollama_local_integration",
+        processingMode: "gpu_optimized_phi3_mini_integration",
         processingTime: Date.now() - startTime,
         gpsLocationData: {
           coordinatesUsed: null,
@@ -166,12 +166,12 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
     };
 
   } catch (error) {
-    console.error("Working Ollama local converse error:", error.message);
-    console.error("Working Ollama local converse error stack:", error.stack);
+    console.error("GPU optimized phi3:mini converse error:", error.message);
+    console.error("GPU optimized phi3:mini converse error stack:", error.stack);
     const total = Date.now() - startTime;
     const fallbackReply = "Sugar, I'm having a little trouble right now. If you can share your GPS or the town you're asking about, I'll tailor the answer right to your spot on the map.";
 
-    gpsEnhancedMemory.storeMemory(userId, message, fallbackReply, { fallback: true, working_ollama_local: true }, null);
+    gpsEnhancedMemory.storeMemory(userId, message, fallbackReply, { fallback: true, gpu_optimized_phi3_mini: true }, null);
 
     try {
       const fetch = await getFetch();
@@ -188,7 +188,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
             confidence: 'medium',
             isFallback: true,
             error: error.message,
-            workingOllamaLocal: true
+            gpuOptimizedPhi3Mini: true
           }
         })
       }).catch(() => {});
@@ -201,7 +201,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
       consultation: {
         specialists: ["authentic_fallback"],
         confidence: "medium",
-        processingMode: "fallback_with_working_ollama_local",
+        processingMode: "fallback_with_gpu_optimized_phi3_mini",
         processingTime: total,
         fallbackReason: error.message
       }
