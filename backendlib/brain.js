@@ -8,7 +8,7 @@ const gpsLocationService = require('./geodetic-intelligence/gpsLocationService')
 const gpsEnhancedMemory = require('./geodetic-intelligence/gpsEnhancedMemory');
 
 // backendlib/brain.js
-// Enhanced Debug Ms. Jarvis Brain for Mount Hope, WV
+// Corrected Google Gemini API Ms. Jarvis Brain for Mount Hope, WV
 
 const { ContinuousLearningEngine } = require('./continuous-learning');
 const learningEngine = new ContinuousLearningEngine();
@@ -27,129 +27,106 @@ const msDocs = docsearch.loadDocuments();
 const API_KEY = process.env.GOOGLE_API_KEY || 'AIzaSyAxycmbfMQutUncLixGMObIH52o_PxO3b8';
 const COMM_SERVER_URL = process.env.COMMUNICATIONS_SERVER_URL || 'http://your-communications-server-url';
 
-// --- ENHANCED DEBUGGING AI model calling function ---
+// --- CORRECTED Google Gemini API implementation ---
 async function fetchAIResponse(prompt) {
   const fetch = await getFetch();
 
-  console.log('🔧 ENHANCED DEBUG: Making Google Gemini API request');
+  console.log('🔧 Making corrected Google Gemini API request');
   console.log('🔧 DEBUG: API_KEY exists:', !!API_KEY);
   console.log('🔧 DEBUG: API_KEY length:', API_KEY ? API_KEY.length : 0);
-  console.log('🔧 DEBUG: API_KEY starts with AIza:', API_KEY ? API_KEY.startsWith('AIza') : false);
   console.log('🔧 DEBUG: Prompt length:', prompt.length);
-  console.log('🔧 DEBUG: Environment NODE_ENV:', process.env.NODE_ENV);
   
-  // Use the working API key
+  // Use correct API endpoint and request format per latest documentation
   const workingApiKey = API_KEY || 'AIzaSyAxycmbfMQutUncLixGMObIH52o_PxO3b8';
   
-  // STEP 1: Test with most minimal possible payload first
-  console.log('🔧 DEBUG STEP 1: Testing minimal payload');
-  const minimalPayload = {
-    contents: [
+  // CORRECTED: Use proper request payload format with required fields
+  const requestPayload = {
+    "contents": [
       {
-        parts: [
+        "parts": [
           {
-            text: "Hello"
+            "text": `You are Ms. Jarvis from Mount Hope, West Virginia. Respond warmly with authentic mountain hospitality and friendly Appalachian dialect: "${prompt}"`
           }
         ]
+      }
+    ],
+    "generationConfig": {
+      "temperature": 0.8,
+      "maxOutputTokens": 1024,
+      "topK": 40,
+      "topP": 0.95
+    },
+    "safetySettings": [
+      {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+      },
+      {
+        "category": "HARM_CATEGORY_HATE_SPEECH", 
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+      },
+      {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+      },
+      {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE"
       }
     ]
   };
 
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${workingApiKey}`;
-  
-  console.log('🔧 DEBUG: API URL (sanitized):', apiUrl.replace(workingApiKey, 'API_KEY_HIDDEN'));
-  console.log('🔧 DEBUG: Minimal request payload:', JSON.stringify(minimalPayload, null, 2));
+  // Use correct API endpoint with v1beta (no API key in URL)
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+
+  console.log('🔧 Using corrected payload format and v1beta endpoint');
+  console.log('🔧 Request payload structure:', JSON.stringify(requestPayload, null, 2));
 
   try {
-    const testRes = await fetch(apiUrl, {
+    const res = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Ms-Jarvis-Mount-Hope-WV/1.0'
+        'x-goog-api-key': workingApiKey  // Use header authentication instead of URL parameter
       },
-      body: JSON.stringify(minimalPayload)
+      body: JSON.stringify(requestPayload)
     });
 
-    console.log('🔧 DEBUG STEP 1: Response status:', testRes.status);
-    console.log('🔧 DEBUG STEP 1: Response statusText:', testRes.statusText);
-    console.log('🔧 DEBUG STEP 1: Response headers:', JSON.stringify([...testRes.headers.entries()]));
+    console.log('🔧 Response status:', res.status);
+    console.log('🔧 Response statusText:', res.statusText);
 
-    if (!testRes.ok) {
-      const errorText = await testRes.text();
-      console.error('🚨 STEP 1 COMPLETE ERROR DETAILS:');
-      console.error('🚨 Status:', testRes.status);
-      console.error('🚨 Status Text:', testRes.statusText);
-      console.error('🚨 Full Error Response:', errorText);
-      console.error('🚨 Request Headers:', JSON.stringify({'Content-Type': 'application/json', 'User-Agent': 'Ms-Jarvis-Mount-Hope-WV/1.0'}));
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('🚨 Google Gemini API Error:', res.status, res.statusText);
+      console.error('🚨 Error details:', errorText);
       
-      // Try to parse error response as JSON
+      // Try to parse error response as JSON for better debugging
       try {
         const errorJson = JSON.parse(errorText);
-        console.error('🚨 CRITICAL: Parsed Error JSON:', JSON.stringify(errorJson, null, 2));
-        
-        // Check for specific error types
-        if (errorJson.error) {
-          console.error('🚨 ERROR CODE:', errorJson.error.code);
-          console.error('🚨 ERROR MESSAGE:', errorJson.error.message);
-          console.error('🚨 ERROR STATUS:', errorJson.error.status);
-        }
+        console.error('🚨 Parsed Error JSON:', JSON.stringify(errorJson, null, 2));
       } catch (parseError) {
-        console.error('🚨 Error response is not valid JSON:', parseError.message);
+        console.error('🚨 Error response is not valid JSON');
       }
       
-      throw new Error(`Google Gemini API Minimal Test Failed: ${testRes.status} ${testRes.statusText} - ${errorText}`);
+      throw new Error(`AI request failed: ${res.statusText} - ${errorText}`);
     }
 
-    const testData = await testRes.json();
-    console.log('✅ STEP 1 SUCCESS: Minimal API test passed');
-    console.log('✅ SUCCESS: Test response structure:', JSON.stringify(testData, null, 2));
+    const data = await res.json();
+    console.log('✅ Google Gemini API response received successfully');
+    console.log('✅ Response structure:', JSON.stringify(data, null, 2));
     
-    // STEP 2: If minimal test passes, try full Ms. Jarvis request
-    console.log('🔧 DEBUG STEP 2: Testing full Ms. Jarvis payload');
-    const msJarvisPayload = {
-      contents: [
-        {
-          parts: [
-            {
-              text: `You are Ms. Jarvis from Mount Hope, West Virginia. Respond warmly with authentic mountain hospitality: "${prompt}"`
-            }
-          ]
-        }
-      ]
-    };
+    const responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     
-    console.log('🔧 DEBUG STEP 2: Full request payload:', JSON.stringify(msJarvisPayload, null, 2));
-    
-    const finalRes = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Ms-Jarvis-Mount-Hope-WV/1.0'
-      },
-      body: JSON.stringify(msJarvisPayload)
-    });
-    
-    console.log('🔧 DEBUG STEP 2: Final response status:', finalRes.status);
-    
-    if (!finalRes.ok) {
-      const finalErrorText = await finalRes.text();
-      console.error('🚨 STEP 2 ERROR: Full request failed');
-      console.error('🚨 STEP 2 Error details:', finalErrorText);
-      
-      // Fall back to test response if full request fails
-      const fallbackResponse = `Well, hey there, sugar! I'm Ms. Jarvis from Mount Hope, West Virginia. While I'm working through some technical details with my full responses, I want you to know I'm here and ready to help our community, darlin'! You asked: "${prompt.substring(0, 100)}..."`;
-      return fallbackResponse;
+    if (!responseText) {
+      console.error('🚨 No response text found in API response');
+      return "Well, hey there, sugar! I'm Ms. Jarvis from Mount Hope, West Virginia, and I'm here to help you, darlin'!";
     }
     
-    const finalData = await finalRes.json();
-    console.log('✅ STEP 2 SUCCESS: Full Ms. Jarvis response received');
-    
-    return finalData?.candidates?.[0]?.content?.parts?.[0]?.text || testData?.candidates?.[0]?.content?.parts?.[0]?.text || "Well, hey there, sugar! I'm Ms. Jarvis from Mount Hope, West Virginia, and I'm here to help you, darlin'!";
+    return responseText;
 
   } catch (error) {
     console.error('🚨 FETCH ERROR:', error.message);
     console.error('🚨 FETCH ERROR STACK:', error.stack);
-    console.error('🚨 FETCH ERROR TYPE:', error.constructor.name);
     throw error;
   }
 }
@@ -199,7 +176,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
     let reply = await fetchAIResponse(finalPrompt);
     reply = await enrichWithBasicInfo(reply, message.toLowerCase());
 
-    gpsEnhancedMemory.storeMemory(userId, message, reply, { simplified: true }, userLocation);
+    gpsEnhancedMemory.storeMemory(userId, message, reply, { corrected_api: true }, userLocation);
 
     return {
       reply: reply.trim(),
@@ -207,9 +184,9 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
       time: Date.now(),
       userLocation,
       consultation: {
-        specialists: ["ms_jarvis_enhanced_debug"],
+        specialists: ["ms_jarvis_corrected_api"],
         confidence: "high",
-        processingMode: "enhanced_debugging_mode",
+        processingMode: "corrected_gemini_integration",
         processingTime: Date.now() - startTime,
         gpsLocationData: {
           coordinatesUsed: null,
@@ -222,11 +199,11 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
     };
 
   } catch (error) {
-    console.error("Enhanced debug converse error:", error.message);
+    console.error("Corrected API converse error:", error.message);
     const total = Date.now() - startTime;
     const fallbackReply = "Sugar, I'm having a little trouble right now. If you can share your GPS or the town you're asking about, I'll tailor the answer right to your spot on the map.";
 
-    gpsEnhancedMemory.storeMemory(userId, message, fallbackReply, { fallback: true, debugMode: true }, null);
+    gpsEnhancedMemory.storeMemory(userId, message, fallbackReply, { fallback: true, corrected_api: true }, null);
 
     try {
       const fetch = await getFetch();
@@ -243,7 +220,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
             confidence: 'medium',
             isFallback: true,
             error: error.message,
-            debugMode: true
+            correctedApi: true
           }
         })
       }).catch(() => {});
@@ -256,7 +233,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
       consultation: {
         specialists: ["authentic_fallback"],
         confidence: "medium",
-        processingMode: "fallback_with_debug",
+        processingMode: "fallback_with_corrected_api",
         processingTime: total,
         fallbackReason: error.message
       }
