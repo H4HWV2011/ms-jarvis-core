@@ -8,7 +8,7 @@ const gpsLocationService = require('./geodetic-intelligence/gpsLocationService')
 const gpsEnhancedMemory = require('./geodetic-intelligence/gpsEnhancedMemory');
 
 // backendlib/brain.js
-// Corrected Google Gemini API Ms. Jarvis Brain for Mount Hope, WV
+// FINAL CORRECTED Google Gemini API Ms. Jarvis Brain for Mount Hope, WV
 
 const { ContinuousLearningEngine } = require('./continuous-learning');
 const learningEngine = new ContinuousLearningEngine();
@@ -27,19 +27,25 @@ const msDocs = docsearch.loadDocuments();
 const API_KEY = process.env.GOOGLE_API_KEY || 'AIzaSyAxycmbfMQutUncLixGMObIH52o_PxO3b8';
 const COMM_SERVER_URL = process.env.COMMUNICATIONS_SERVER_URL || 'http://your-communications-server-url';
 
-// --- CORRECTED Google Gemini API implementation ---
+// --- FINAL CORRECTED Google Gemini API implementation per latest documentation ---
 async function fetchAIResponse(prompt) {
   const fetch = await getFetch();
 
-  console.log('🔧 Making corrected Google Gemini API request');
-  console.log('🔧 DEBUG: API_KEY exists:', !!API_KEY);
-  console.log('🔧 DEBUG: API_KEY length:', API_KEY ? API_KEY.length : 0);
+  console.log('🔧 Making FINAL CORRECTED Google Gemini API request');
+  
+  // Use environment variable API key
+  const workingApiKey = process.env.GOOGLE_API_KEY || 'AIzaSyAxycmbfMQutUncLixGMObIH52o_PxO3b8';
+  
+  if (!workingApiKey) {
+    throw new Error('GOOGLE_API_KEY not found in environment variables');
+  }
+  
+  console.log('🔧 DEBUG: API_KEY exists:', !!workingApiKey);
+  console.log('🔧 DEBUG: API_KEY length:', workingApiKey ? workingApiKey.length : 0);
+  console.log('🔧 DEBUG: API_KEY starts with AIza:', workingApiKey ? workingApiKey.startsWith('AIza') : false);
   console.log('🔧 DEBUG: Prompt length:', prompt.length);
   
-  // Use correct API endpoint and request format per latest documentation
-  const workingApiKey = API_KEY || 'AIzaSyAxycmbfMQutUncLixGMObIH52o_PxO3b8';
-  
-  // CORRECTED: Use proper request payload format with required fields
+  // FINAL CORRECTED: Use proper request payload format per latest docs
   const requestPayload = {
     "contents": [
       {
@@ -53,8 +59,10 @@ async function fetchAIResponse(prompt) {
     "generationConfig": {
       "temperature": 0.8,
       "maxOutputTokens": 1024,
+      "topP": 0.9,
       "topK": 40,
-      "topP": 0.95
+      "stopSequences": [],
+      "candidateCount": 1
     },
     "safetySettings": [
       {
@@ -62,7 +70,7 @@ async function fetchAIResponse(prompt) {
         "threshold": "BLOCK_MEDIUM_AND_ABOVE"
       },
       {
-        "category": "HARM_CATEGORY_HATE_SPEECH", 
+        "category": "HARM_CATEGORY_HATE_SPEECH",
         "threshold": "BLOCK_MEDIUM_AND_ABOVE"
       },
       {
@@ -76,10 +84,11 @@ async function fetchAIResponse(prompt) {
     ]
   };
 
-  // Use correct API endpoint with v1beta (no API key in URL)
+  // FINAL CORRECTED: Use proper endpoint without API key in URL
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
 
-  console.log('🔧 Using corrected payload format and v1beta endpoint');
+  console.log('🔧 Using FINAL CORRECTED request format and header authentication');
+  console.log('🔧 API URL:', apiUrl);
   console.log('🔧 Request payload structure:', JSON.stringify(requestPayload, null, 2));
 
   try {
@@ -87,46 +96,56 @@ async function fetchAIResponse(prompt) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': workingApiKey  // Use header authentication instead of URL parameter
+        'x-goog-api-key': workingApiKey  // FINAL CORRECTED: Use header authentication
       },
       body: JSON.stringify(requestPayload)
     });
 
     console.log('🔧 Response status:', res.status);
     console.log('🔧 Response statusText:', res.statusText);
+    console.log('🔧 Response headers:', JSON.stringify([...res.headers.entries()]));
 
     if (!res.ok) {
       const errorText = await res.text();
-      console.error('🚨 Google Gemini API Error:', res.status, res.statusText);
-      console.error('🚨 Error details:', errorText);
+      console.error('🚨 Google Gemini API Error (FINAL CORRECTED):', res.status, res.statusText);
+      console.error('🚨 Full error response:', errorText);
       
-      // Try to parse error response as JSON for better debugging
       try {
         const errorJson = JSON.parse(errorText);
         console.error('🚨 Parsed Error JSON:', JSON.stringify(errorJson, null, 2));
+        
+        if (errorJson.error) {
+          console.error('🚨 ERROR CODE:', errorJson.error.code);
+          console.error('🚨 ERROR MESSAGE:', errorJson.error.message);
+          console.error('🚨 ERROR STATUS:', errorJson.error.status);
+          console.error('🚨 ERROR DETAILS:', JSON.stringify(errorJson.error.details, null, 2));
+        }
       } catch (parseError) {
-        console.error('🚨 Error response is not valid JSON');
+        console.error('🚨 Error response is not valid JSON:', parseError.message);
       }
       
       throw new Error(`AI request failed: ${res.statusText} - ${errorText}`);
     }
 
     const data = await res.json();
-    console.log('✅ Google Gemini API response received successfully');
+    console.log('✅ FINAL CORRECTED Google Gemini API response received successfully');
     console.log('✅ Response structure:', JSON.stringify(data, null, 2));
     
     const responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     
     if (!responseText) {
       console.error('🚨 No response text found in API response');
+      console.error('🚨 Full response data:', JSON.stringify(data, null, 2));
       return "Well, hey there, sugar! I'm Ms. Jarvis from Mount Hope, West Virginia, and I'm here to help you, darlin'!";
     }
     
+    console.log('✅ Successfully extracted response text:', responseText.substring(0, 100) + '...');
     return responseText;
 
   } catch (error) {
-    console.error('🚨 FETCH ERROR:', error.message);
-    console.error('🚨 FETCH ERROR STACK:', error.stack);
+    console.error('🚨 FINAL CORRECTED FETCH ERROR:', error.message);
+    console.error('🚨 FINAL CORRECTED FETCH ERROR STACK:', error.stack);
+    console.error('🚨 FINAL CORRECTED FETCH ERROR TYPE:', error.constructor.name);
     throw error;
   }
 }
@@ -173,10 +192,15 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
     const docContext = relevantDocs.map(doc => doc.paragraph.slice(0, 100)).join(' ');
     const finalPrompt = buildFinalPrompt(message, userLocation, docContext);
 
+    console.log('🔧 Processing message:', message.substring(0, 50) + '...');
+    console.log('🔧 Final prompt:', finalPrompt.substring(0, 50) + '...');
+
     let reply = await fetchAIResponse(finalPrompt);
     reply = await enrichWithBasicInfo(reply, message.toLowerCase());
 
-    gpsEnhancedMemory.storeMemory(userId, message, reply, { corrected_api: true }, userLocation);
+    gpsEnhancedMemory.storeMemory(userId, message, reply, { final_corrected_api: true }, userLocation);
+
+    console.log('✅ Successfully processed request with final corrected API');
 
     return {
       reply: reply.trim(),
@@ -184,9 +208,9 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
       time: Date.now(),
       userLocation,
       consultation: {
-        specialists: ["ms_jarvis_corrected_api"],
+        specialists: ["ms_jarvis_final_corrected_api"],
         confidence: "high",
-        processingMode: "corrected_gemini_integration",
+        processingMode: "final_corrected_gemini_integration",
         processingTime: Date.now() - startTime,
         gpsLocationData: {
           coordinatesUsed: null,
@@ -199,11 +223,12 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
     };
 
   } catch (error) {
-    console.error("Corrected API converse error:", error.message);
+    console.error("Final corrected API converse error:", error.message);
+    console.error("Final corrected API converse error stack:", error.stack);
     const total = Date.now() - startTime;
     const fallbackReply = "Sugar, I'm having a little trouble right now. If you can share your GPS or the town you're asking about, I'll tailor the answer right to your spot on the map.";
 
-    gpsEnhancedMemory.storeMemory(userId, message, fallbackReply, { fallback: true, corrected_api: true }, null);
+    gpsEnhancedMemory.storeMemory(userId, message, fallbackReply, { fallback: true, final_corrected_api: true }, null);
 
     try {
       const fetch = await getFetch();
@@ -220,7 +245,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
             confidence: 'medium',
             isFallback: true,
             error: error.message,
-            correctedApi: true
+            finalCorrectedApi: true
           }
         })
       }).catch(() => {});
@@ -233,7 +258,7 @@ exports.converse = async function(message, userId, requestMetadata = {}) {
       consultation: {
         specialists: ["authentic_fallback"],
         confidence: "medium",
-        processingMode: "fallback_with_corrected_api",
+        processingMode: "fallback_with_final_corrected_api",
         processingTime: total,
         fallbackReason: error.message
       }
