@@ -6,8 +6,7 @@
       "maxDuration": 30
     },
     "api/chat-with-mountainshares-brain.js": {
-      "maxDuration": 300,
-      "regions": ["iad1", "sfo1"]
+      "maxDuration": 300
     }
   },
   "rewrites": [
